@@ -93,6 +93,36 @@ function init() {
     const postOutput = document.getElementById('post-output');
     if (postOutput) postOutput.addEventListener('input', () => autoResize(postOutput));
     
+
+    // В конце функции init() добавь:
+
+// Фикс для мобильных - принудительно включаем скролл
+if (window.innerWidth <= 768) {
+    document.body.style.overflow = 'auto';
+    document.body.style.height = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    document.documentElement.style.height = 'auto';
+    
+    // Убираем overflow hidden у всех основных контейнеров
+    const containers = document.querySelectorAll('.main, .page, .app-shell, .h-screen, .overflow-hidden');
+    containers.forEach(el => {
+        el.style.overflow = 'visible';
+        el.style.height = 'auto';
+        el.style.minHeight = 'auto';
+    });
+}
+
+// Обработчик изменения размера окна
+window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+        document.body.style.overflow = 'auto';
+        document.body.style.height = 'auto';
+    } else {
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+    }
+});
+
     // Первоначальный рендер
     renderIdeas();
     renderCalendar();
@@ -102,6 +132,8 @@ function init() {
     
     showNotification('🎉 Glitchless Pin готов к работе!', 'success');
 }
+
+
 
 // Запуск
 document.addEventListener('DOMContentLoaded', init);

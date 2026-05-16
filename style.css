@@ -2058,3 +2058,130 @@ textarea.input {
       display: block;
   }
 }
+
+/* ============ МОБИЛЬНАЯ АДАПТАЦИЯ С ПРОКРУТКОЙ ============ */
+
+/* Базовые исправления для мобильных */
+@media (max-width: 768px) {
+  /* Убираем overflow hidden на body и main */
+  body {
+      height: auto;
+      min-height: 100vh;
+      overflow-y: auto !important;
+      overflow-x: hidden;
+  }
+  
+  .app-shell {
+      flex-direction: column;
+      height: auto;
+      min-height: 100vh;
+  }
+  
+  .main {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto !important;
+      overflow-x: hidden;
+  }
+  
+  .page {
+      overflow-y: auto !important;
+      min-height: calc(100vh - 120px);
+  }
+  
+  /* Убираем ограничения по высоте */
+  .h-screen, .h-full, .min-h-0, .flex-1 {
+      height: auto !important;
+      min-height: auto !important;
+      overflow: visible !important;
+  }
+  
+  /* Контейнеры с прокруткой */
+  .ideas-list, .templates-list, .calendar-days {
+      max-height: none !important;
+      overflow-y: visible !important;
+  }
+  
+  /* Панели на главной */
+  .grid-cols-1.lg\:grid-cols-2 {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 16px !important;
+      height: auto !important;
+  }
+  
+  .flex.flex-col.rounded-2xl {
+      max-height: none !important;
+      height: auto !important;
+  }
+  
+  .overflow-y-auto {
+      overflow-y: visible !important;
+  }
+  
+  /* Календарь на мобилках */
+  .calendar-days {
+      display: grid;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+  }
+  
+  .calendar-day {
+      min-height: 100px;
+  }
+  
+  /* Исправление для контента */
+  .p-4 {
+      padding: 12px !important;
+  }
+  
+  .h-full.p-4 {
+      padding: 12px !important;
+      height: auto !important;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+  .calendar-day {
+      min-height: 90px;
+  }
+  
+  .calendar-item .item-title {
+      max-width: 35px;
+      font-size: 8px;
+  }
+  
+  .idea-actions {
+      flex-wrap: wrap;
+  }
+  
+  .idea-btn {
+      padding: 6px 8px;
+      font-size: 10px;
+  }
+  
+  .modal-actions {
+      flex-direction: column;
+  }
+  
+  .modal-actions .btn {
+      width: 100%;
+  }
+}
+
+/* Глобальные исправления для скролла на всех устройствах */
+body, .main, .page {
+  -webkit-overflow-scrolling: touch; /* плавный скролл на iOS */
+}
+
+/* Убедимся, что контент не обрезается */
+.overflow-hidden {
+  overflow: visible !important;
+}
+
+.h-screen {
+  min-height: 100vh;
+  height: auto;
+}
