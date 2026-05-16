@@ -133,7 +133,22 @@ window.addEventListener('resize', () => {
     showNotification('🎉 Glitchless Pin готов к работе!', 'success');
 }
 
-
+// Глобальная функция для принудительного закрытия всех модалок
+window.forceCloseModal = () => {
+    const modalRoot = document.getElementById('modal-root');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalContent = document.getElementById('modal-content');
+    
+    if (modalRoot) modalRoot.classList.add('hidden');
+    if (modalBackdrop) modalBackdrop.classList.remove('show');
+    if (modalContent) modalContent.innerHTML = '';
+    
+    // Убираем классы
+    if (modalContent) modalContent.classList.remove('dialog-modal');
+    
+    // Очищаем resolver
+    window._dialogResolve = null;
+};
 
 // Запуск
 document.addEventListener('DOMContentLoaded', init);

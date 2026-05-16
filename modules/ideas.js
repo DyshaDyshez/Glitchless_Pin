@@ -14,13 +14,18 @@ export function addIdea({ topic, tagKey, text, direction }) {
 export async function deleteIdea(id) {
     const confirmed = await customConfirm('🗑️ Удалить эту идею? Это действие нельзя отменить.', 'Удаление идеи');
     if (!confirmed) return;
+    
     appState.ideas = appState.ideas.filter(i => i.id !== id);
     appState.calendar = appState.calendar.filter(c => c.ideaId !== id);
     saveState();
+    
     if (currentIdeaId === id) {
         setCurrentIdeaId(null);
-        document.getElementById('post-output').value = '';
-        document.getElementById('post-output').placeholder = '✨ Здесь появится готовый пост после генерации...';
+        const postOutput = document.getElementById('post-output');
+        if (postOutput) {
+            postOutput.value = '';
+            postOutput.placeholder = '✨ Здесь появится готовый пост после генерации...';
+        }
     }
     showNotification('✅ Идея удалена', 'info');
 }

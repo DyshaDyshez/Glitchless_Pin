@@ -46,11 +46,16 @@ export function closeModal() {
     const modalRoot = document.getElementById('modal-root');
     const modalBackdrop = document.getElementById('modal-backdrop');
     const modalContent = document.getElementById('modal-content');
+    
+    if (!modalRoot) return;
+    
     modalBackdrop.classList.remove('show');
     setTimeout(() => {
         modalRoot.classList.add('hidden');
-        modalContent.innerHTML = '';
-        modalContent.classList.remove('dialog-modal');
+        if (modalContent) {
+            modalContent.innerHTML = '';
+            modalContent.classList.remove('dialog-modal');
+        }
     }, 200);
 }
 
@@ -67,7 +72,11 @@ export function customConfirm(message, title = 'Подтверждение') {
                 </div>
             </div>
         `;
-        window._dialogResolve = resolve;
+        window._dialogResolve = (value) => {
+            resolve(value);
+            closeModal(); // Принудительно закрываем модалку после ответа
+            window._dialogResolve = null;
+        };
         openModal(html, true);
     });
 }
@@ -88,7 +97,11 @@ export function customPrompt(message, defaultValue = '', title = 'Введите
                 </div>
             </div>
         `;
-        window._dialogResolve = resolve;
+        window._dialogResolve = (value) => {
+            resolve(value);
+            closeModal(); // Принудительно закрываем модалку после ответа
+            window._dialogResolve = null;
+        };
         openModal(html, true);
     });
 }

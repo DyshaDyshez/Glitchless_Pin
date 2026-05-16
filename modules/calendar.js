@@ -202,14 +202,32 @@ window.copyModalPostContent = () => {
     }
 };
 
+// modules/calendar.js - исправленные функции
+
+// modules/calendar.js - замени эти функции
+
 export function markAsPublished(id) {
     const item = appState.calendar?.find(c => c.id === id);
-    if (item) { item.published = true; item.publishedAt = new Date().toISOString(); saveState(); renderCalendar(); closeModal(); showNotification('✅ Пост отмечен как опубликованный!', 'success'); }
+    if (item) { 
+        item.published = true; 
+        item.publishedAt = new Date().toISOString(); 
+        saveState(); 
+        renderCalendar(); 
+        closeModal(); // Закрываем модалку
+        showNotification('✅ Пост отмечен как опубликованный!', 'success'); 
+    }
 }
 
 export function markAsDraft(id) {
     const item = appState.calendar?.find(c => c.id === id);
-    if (item) { item.published = false; delete item.publishedAt; saveState(); renderCalendar(); closeModal(); showNotification('📝 Пост возвращён в черновики', 'info'); }
+    if (item) { 
+        item.published = false; 
+        delete item.publishedAt; 
+        saveState(); 
+        renderCalendar(); 
+        closeModal(); // Закрываем модалку
+        showNotification('📝 Пост возвращён в черновики', 'info'); 
+    }
 }
 
 export function addToCalendar() {
