@@ -1,0 +1,9 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+node_modules/
+.firebase/
+*.log
+.env
+.DS_Store
+

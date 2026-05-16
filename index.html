@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glitchless Pin — AI Генератор постов</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-screen overflow-hidden">
+  <div class="app-shell h-full">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="sidebar__logo">📌</div>
+        <div>
+          <div class="sidebar__title">Glitchless Pin</div>
+          <div class="sidebar__subtitle">AI генератор постов</div>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <button class="navlink" data-page="planner">
+          <i class="fa-regular fa-pen-to-square"></i>
+          <span>📝 Планирование</span>
+        </button>
+        <button class="navlink" data-page="templates">
+          <i class="fa-regular fa-heart"></i>
+          <span>⭐ Шаблоны</span>
+          <span id="templates-badge" class="ml-auto text-xs bg-white/20 px-1.5 py-0.5 rounded-full">0</span>
+        </button>
+        <button class="navlink" data-page="calendar">
+          <i class="fa-regular fa-calendar"></i>
+          <span>📅 Календарь</span>
+        </button>
+        <button class="navlink" data-page="statistics">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>📊 Статистика</span>
+        </button>
+        <button class="navlink" data-page="account">
+          <i class="fa-regular fa-user"></i>
+          <span>👤 Аккаунт</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="status-badge">
+          <span class="status-dot status-dot--ok"></span>
+          <span>🤖 AI активен</span>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-export-json" class="btn btn--ghost btn-sm flex-1">
+            <i class="fa-regular fa-file-export"></i> JSON
+          </button>
+          <button id="btn-generate-excel" class="btn btn--ghost btn-sm flex-1">
+            <i class="fa-regular fa-file-excel"></i> Excel
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main flex flex-col">
+      <!-- Topbar -->
+      <header class="topbar flex-shrink-0">
+        <div class="topbar__left">
+          <h1 id="page-title" class="text-xl font-bold text-slate-900">🤖 AI Генератор постов</h1>
+          <p id="page-subtitle" class="text-sm text-slate-600">Создайте идею → Получите готовый пост → Сохраняйте лучшие</p>
+        </div>
+        <div class="topbar__right">
+          <button id="btn-generate-auto" class="btn btn--primary">
+            <i class="fa-regular fa-wand-magic-sparkles"></i>
+            🎲 Авто-идеи
+          </button>
+        </div>
+      </header>
+
+      <!-- Страница: Планирование -->
+      <section id="page-planner" class="page page--active flex-1 min-h-0">
+        <div class="h-full p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
+            
+            <!-- ЛЕВАЯ ПАНЕЛЬ -->
+            <div class="flex flex-col rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur overflow-hidden">
+              <div class="panel-header flex-shrink-0">
+                <div>
+                  <div class="panel-title">✨ Создание идеи</div>
+                  <div class="panel-subtitle">Опишите тему → AI сделает всё остальное</div>
+                </div>
+                <button id="btn-add-idea" class="btn btn--ghost btn-sm">
+                  <i class="fa-regular fa-plus"></i> Новая
+                </button>
+              </div>
+
+              <div class="flex-1 overflow-y-auto p-4">
+                <div class="space-y-4">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="label">🎯 Направление</label>
+                      <select id="direction-select" class="input">
+                        <option value="Экспертность">🎓 Экспертность</option>
+                        <option value="Польза">💡 Польза</option>
+                        <option value="Продажа">💰 Продажа</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label">📱 Платформа</label>
+                      <select id="idea-tag" class="input">
+                        <option value="Pinterest">📌 Pinterest</option>
+                        <option value="Insta">📸 Instagram</option>
+                        <option value="TG">✈️ Telegram</option>
+                        <option value="Блог">📝 Блог</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="label">💭 Тема поста</label>
+                    <textarea id="idea-topic" class="input auto-resize" rows="2" placeholder="Например: 10 ошибок в Pinterest, которые убивают трафик"></textarea>
+                  </div>
+
+                  <div>
+                    <label class="label">📝 Детали (опционально)</label>
+                    <textarea id="idea-text" class="input auto-resize" rows="2" placeholder="Уточните: аудитория, tone of voice, ключевые преимущества..."></textarea>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <button id="btn-generate-idea" class="btn btn--primary flex-1">
+                      <i class="fa-regular fa-magic"></i> 🚀 Сгенерировать пост
+                    </button>
+                    <button id="btn-save-idea" class="btn btn--secondary">
+                      <i class="fa-regular fa-floppy-disk"></i> 💾 Сохранить
+                    </button>
+                  </div>
+
+                  <div class="border-t border-slate-200 pt-4">
+                    <div class="section-title flex items-center justify-between">
+                      <span>📋 Сохранённые идеи</span>
+                      <span class="text-xs text-slate-500" id="ideas-count">0</span>
+                    </div>
+                    <div id="ideas-list" class="ideas-list space-y-2 max-h-[350px] overflow-y-auto"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ПРАВАЯ ПАНЕЛЬ -->
+            <div class="flex flex-col rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur overflow-hidden">
+              <div class="panel-header flex-shrink-0">
+                <div>
+                  <div class="panel-title">📄 Готовый пост</div>
+                  <div class="panel-subtitle">Скопируйте и публикуйте!</div>
+                </div>
+                <div class="flex gap-2">
+                  <button id="btn-add-hashtags" class="btn btn--ghost btn-sm">
+                    <i class="fa-regular fa-hashtag"></i> # Хэштеги
+                  </button>
+                  <button id="btn-copy-post" class="btn btn--ghost btn-sm">
+                    <i class="fa-regular fa-copy"></i> 📋 Копировать
+                  </button>
+                  <button id="btn-add-to-calendar" class="btn btn--primary btn-sm">
+                    <i class="fa-regular fa-calendar-plus"></i> 📅 В календарь
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex-1 overflow-y-auto p-4">
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label class="label">📅 Дата публикации</label>
+                    <input id="plan-date" class="input" type="date" />
+                  </div>
+                  <div>
+                    <label class="label">❤️ Действие</label>
+                    <button id="btn-like-post" class="w-full py-2 rounded-lg border border-pink-200 text-pink-500 hover:bg-pink-50 transition">
+                      <i class="fa-regular fa-heart"></i> Сохранить в шаблоны
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="label">📌 Заметки</label>
+                  <textarea id="plan-notes" class="input auto-resize" rows="2" placeholder="Дополнительные заметки, ссылки..."></textarea>
+                </div>
+
+                <div>
+                  <div class="label flex items-center justify-between mb-2">
+                    <span>📝 Текст поста</span>
+                    <div class="flex gap-2">
+                      <button id="btn-edit-post" class="text-xs text-indigo-600 hover:text-indigo-800">
+                        <i class="fa-regular fa-pen"></i> Редактировать
+                      </button>
+                      <button id="btn-regenerate-post" class="text-xs text-orange-600 hover:text-orange-800">
+                        <i class="fa-regular fa-rotate-right"></i> Перегенерировать
+                      </button>
+                    </div>
+                  </div>
+                  <textarea id="post-output" class="post-output auto-resize" rows="12" placeholder="✨ Здесь появится готовый пост после генерации..." readonly></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Страница: Шаблоны -->
+      <section id="page-templates" class="page hidden flex-1 min-h-0">
+        <div class="h-full p-4">
+          <div class="rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur h-full flex flex-col">
+            <div class="panel-header flex-shrink-0">
+              <div>
+                <div class="panel-title">⭐ Избранные шаблоны</div>
+                <div class="panel-subtitle">Лучшие посты, которые вы отметили сердечком</div>
+              </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4">
+              <div id="templates-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Страница: Календарь -->
+      <section id="page-calendar" class="page hidden flex-1 min-h-0">
+        <div class="h-full p-4">
+          <div class="calendar-shell rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur h-full flex flex-col">
+            <div class="flex-1 overflow-y-auto p-4">
+              <div id="calendar-grid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Страница: Статистика -->
+      <section id="page-statistics" class="page hidden flex-1 min-h-0">
+        <div class="h-full p-4 overflow-y-auto">
+          <div class="rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">📊 Статистика</div>
+                <div class="panel-subtitle">Аналитика вашего контента</div>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="stat-card"><div class="stat-value" id="stat-ideas">0</div><div class="stat-label">💡 Всего идей</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-posts">0</div><div class="stat-label">✨ Сгенерировано</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-templates">0</div><div class="stat-label">⭐ В шаблонах</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-days">0</div><div class="stat-label">📅 Дней в календаре</div></div>
+              </div>
+              <div class="mt-6">
+                <div class="section-title">📱 Распределение по платформам</div>
+                <div id="stats-tags" class="mt-3 space-y-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Страница: Аккаунт -->
+      <section id="page-account" class="page hidden flex-1 min-h-0">
+        <div class="h-full p-4 overflow-y-auto">
+          <div class="rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">👤 Аккаунт</div>
+                <div class="panel-subtitle">Настройки и информация</div>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                <i class="fa-regular fa-info-circle"></i> 💾 Все данные хранятся локально. Регулярно делайте экспорт.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Notifications container -->
+  <div id="notification-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+  <!-- Modals -->
+  <div id="modal-root" class="modal-root hidden">
+    <div id="modal-backdrop" class="modal-backdrop"></div>
+    <div id="modal-content" class="modal-content" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <!-- Подключаем модули -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>

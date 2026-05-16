@@ -1,0 +1,1732 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #ec4899;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --dark: #0f172a;
+  --light: #f8fafc;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Layout */
+.app-shell {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  width: 280px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  color: #e2e8f0;
+  border-right: 1px solid rgba(148, 163, 184, 0.3);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.sidebar__logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.sidebar__title {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.sidebar__subtitle {
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.navlink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(226, 232, 240, 0.05);
+  color: rgba(226, 232, 240, 0.9);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.navlink:hover {
+  background: rgba(226, 232, 240, 0.12);
+  transform: translateX(4px);
+}
+
+.sidebar__footer {
+  padding-top: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(226, 232, 240, 0.08);
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot--ok {
+  background: #22c55e;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Pages */
+.page {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.page.hidden {
+  display: none;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  color: white;
+}
+
+.btn--secondary {
+  background: white;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn--ghost {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* Panels */
+.panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.panel-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.panel-title {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--dark);
+}
+
+.panel-subtitle {
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.6);
+  margin-top: 2px;
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark);
+  margin-bottom: 12px;
+}
+
+/* Inputs */
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.7);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.input, select.input, textarea.input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.input:focus, select.input:focus, textarea.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.auto-resize {
+  overflow: hidden;
+  resize: none;
+}
+
+/* Post output */
+.post-output {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 14px;
+  line-height: 1.6;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.post-output:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Ideas list */
+.ideas-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.idea-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.idea-card:hover {
+  transform: translateX(2px);
+}
+
+.idea-badge {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Calendar */
+.calendar-grid {
+  min-height: 500px;
+}
+
+.calendar-day {
+  transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+  background: #f8fafc !important;
+}
+
+.calendar-item {
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.calendar-item:active {
+  cursor: grabbing;
+}
+
+/* Stats */
+.stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--dark);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.6);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* Modal */
+.modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.modal-root.hidden {
+  display: none;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+}
+
+.modal-content {
+  position: relative;
+  margin: 10vh auto;
+  width: min(600px, 90%);
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 80px;
+    padding: 16px 12px;
+  }
+  
+  .sidebar__title,
+  .sidebar__subtitle,
+  .navlink span {
+    display: none;
+  }
+  
+  .navlink {
+    justify-content: center;
+    padding: 12px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Добавьте в конец файла style.css */
+
+/* Notifications */
+@keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slide-out {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+  
+  .animate-slide-in {
+    animation: slide-in 0.3s ease forwards;
+  }
+  
+  /* Modal animations */
+  .modal-content {
+    animation: fadeInScale 0.2s ease;
+  }
+  
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Добавьте в конец файла */
+
+/* Auto-resize textareas */
+.auto-resize {
+    overflow-y: hidden;
+    transition: height 0.1s ease;
+  }
+  
+  /* Post output styling */
+  .post-output {
+    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    resize: vertical;
+  }
+  
+  .post-output:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+  
+  /* Animations */
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slide-out {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+  
+  .animate-slide-in {
+    animation: slide-in 0.3s ease forwards;
+  }
+  
+  /* Modal animation */
+  .modal-content {
+    animation: fadeInScale 0.2s ease;
+  }
+  
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Добавьте в конец style.css */
+
+/* ============ КАЛЕНДАРЬ ============ */
+#calendar-grid {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .calendar-month-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: capitalize;
+  }
+  
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .weekday {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 8px;
+  }
+  
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  
+  .calendar-day {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    min-height: 120px;
+    padding: 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .calendar-day:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+  
+  .calendar-day.empty {
+    background: #f8fafc;
+    opacity: 0.5;
+  }
+  
+  .calendar-day.today {
+    border: 2px solid #6366f1;
+    background: #f0f9ff;
+  }
+  
+  .calendar-day-number {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-align: right;
+    margin-bottom: 8px;
+  }
+  
+  .calendar-day.today .calendar-day-number {
+    color: #6366f1;
+    font-weight: 700;
+  }
+  
+  .calendar-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .calendar-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    padding: 4px 6px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    cursor: grab;
+    transition: all 0.2s ease;
+    border-left: 3px solid;
+    overflow: hidden;
+  }
+  
+  .calendar-item:active {
+    cursor: grabbing;
+  }
+  
+  .calendar-item.published {
+    background: #e2e8f0;
+    opacity: 0.7;
+    text-decoration: line-through;
+  }
+  
+  .calendar-item .item-icon {
+    font-size: 0.65rem;
+  }
+  
+  .calendar-item .item-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .published-badge {
+    background: #10b981;
+    color: white;
+    border-radius: 10px;
+    padding: 0px 4px;
+    font-size: 0.6rem;
+    font-weight: bold;
+  }
+  
+  .calendar-item.empty-slot {
+    background: transparent;
+    border: 1px dashed #cbd5e1;
+    cursor: default;
+    min-height: 28px;
+  }
+  
+  .calendar-more {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-align: center;
+    padding: 2px;
+  }
+  
+  .drag-over {
+    background: #f0f9ff;
+    border: 2px dashed #6366f1;
+  }
+  
+  /* ============ МОДАЛЬНОЕ ОКНО ПОСТА ============ */
+  .post-modal {
+    max-width: 600px;
+  }
+  
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 16px;
+  }
+  
+  .modal-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .modal-icon {
+    font-size: 1.25rem;
+  }
+  
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: color 0.2s;
+  }
+  
+  .modal-close:hover {
+    color: #ef4444;
+  }
+  
+  .modal-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #64748b;
+  }
+  
+  .meta-value {
+    color: #1e293b;
+  }
+  
+  .status-badge {
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .status-badge.published {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  
+  .status-badge.draft {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  
+  .modal-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 16px 0;
+  }
+  
+  .modal-section {
+    margin-bottom: 16px;
+  }
+  
+  .section-title {
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+  }
+  
+  .post-content {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .notes-content {
+    background: #fef3c7;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    color: #92400e;
+  }
+  
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+  
+  .btn--success {
+    background: #10b981;
+    color: white;
+    border: none;
+  }
+  
+  .btn--success:hover {
+    background: #059669;
+  }
+  
+  .btn--warning {
+    background: #f59e0b;
+    color: white;
+    border: none;
+  }
+  
+  .btn--warning:hover {
+    background: #d97706;
+  }
+  
+  /* ============ ШАБЛОНЫ ============ */
+  .template-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 16px;
+    transition: all 0.2s ease;
+  }
+  
+  .template-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+  
+  .template-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  
+  .template-badges {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .template-tag, .template-direction {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #f1f5f9;
+  }
+  
+  .template-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #0f172a;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .template-preview {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .template-use {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    background: #eef2ff;
+    color: #4f46e5;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .template-use:hover {
+    background: #e0e7ff;
+  }
+  
+  .template-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  
+  .template-delete:hover {
+    opacity: 1;
+  }
+  
+  .empty-templates {
+    text-align: center;
+    padding: 48px;
+    background: #f8fafc;
+    border-radius: 16px;
+  }
+  
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+  }
+  
+  .empty-hint {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 8px;
+  }
+  
+  /* ============ ХЭШТЕГИ ============ */
+  .hashtags-modal {
+    max-width: 500px;
+  }
+  
+  .hashtags-categories {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .hashtag-category {
+    margin-bottom: 16px;
+  }
+  
+  .category-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #0f172a;
+    margin-bottom: 8px;
+  }
+  
+  .category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .hashtag-btn {
+    padding: 4px 10px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .hashtag-btn:hover {
+    background: #e0e7ff;
+    border-color: #6366f1;
+  }
+  
+  .custom-hashtag {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  
+  .custom-hashtag .input {
+    flex: 1;
+  }
+  
+  /* ============ АНИМАЦИИ ============ */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+  
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .modal-content {
+    animation: fadeInScale 0.2s ease;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .calendar-day {
+      min-height: 80px;
+    }
+    
+    .calendar-item .item-title {
+      display: none;
+    }
+    
+    .modal-meta {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Добавьте в конец style.css */
+
+/* ============ КАСТОМНЫЕ ДИАЛОГИ ============ */
+.custom-dialog {
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.dialog-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.dialog-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.dialog-message {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    white-space: pre-wrap;
+}
+
+.dialog-input-wrapper {
+    margin-bottom: 24px;
+}
+
+.dialog-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.dialog-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.dialog-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.dialog-btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.dialog-btn-primary {
+    background: #6366f1;
+    color: white;
+}
+
+.dialog-btn-primary:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.dialog-btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.dialog-btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+/* Модальные окна */
+.custom-modal {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.modal-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.modal-body {
+    margin-bottom: 24px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Формы в модалках */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Диалоговая модалка */
+.dialog-modal .modal-content {
+    max-width: 450px;
+    text-align: center;
+}
+
+/* Пустое состояние для идей */
+.empty-ideas {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8fafc;
+    border-radius: 16px;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.empty-ideas p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.empty-hint {
+    font-size: 12px;
+    margin-top: 8px;
+    color: #94a3b8;
+}
+
+/* Стили для карточек идей */
+.idea-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px;
+    transition: all 0.2s ease;
+}
+
+.idea-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.idea-card-header {
+    margin-bottom: 10px;
+}
+
+.idea-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.idea-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: #f1f5f9;
+    border-radius: 20px;
+}
+
+.idea-direction {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: #eef2ff;
+    color: #4f46e5;
+    border-radius: 20px;
+}
+
+.idea-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #0f172a;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.idea-details {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.idea-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.idea-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.idea-btn-generate {
+    background: #6366f1;
+    color: white;
+}
+
+.idea-btn-generate:hover {
+    background: #4f46e5;
+}
+
+.idea-btn-view {
+    background: #10b981;
+    color: white;
+}
+
+.idea-btn-view:hover {
+    background: #059669;
+}
+
+.idea-btn-delete {
+    background: #fee2e2;
+    color: #ef4444;
+    flex: 0 0 auto;
+    padding: 8px 16px;
+}
+
+.idea-btn-delete:hover {
+    background: #fecaca;
+}
+
+/* Статистика */
+.stat-tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.stat-tag-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.stat-tag-count {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Анимации для модалок */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content {
+    animation: fadeInScale 0.2s ease;
+}
+
+/* Добавьте в конец style.css */
+
+/* ============ ПОЛНЫЙ АДАПТИВ БЛОКА С ПОСТОМ ============ */
+#post-output {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: 2px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.2s ease;
+    min-height: 200px;
+    max-height: none;
+    height: auto;
+    overflow-y: auto;
+}
+
+#post-output:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+#post-output[readonly] {
+    background: #f8fafc;
+    cursor: default;
+}
+
+/* Контейнер для правой панели */
+.planner-preview {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.planner-preview .flex-1 {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Автоматическое изменение высоты textarea */
+.auto-resize {
+    overflow-y: auto;
+    resize: vertical;
+    min-height: 60px;
+    max-height: 300px;
+}
+
+/* Стили для календаря */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-radius: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.calendar-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+    background: #f1f5f9;
+    transform: scale(1.05);
+}
+
+.calendar-month-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: capitalize;
+    flex: 1;
+    text-align: center;
+}
+
+.calendar-today-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.calendar-today-btn:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.weekday {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    padding: 10px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-day {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    min-height: 110px;
+    padding: 8px;
+    transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.calendar-day.empty {
+    background: #f8fafc;
+    opacity: 0.5;
+}
+
+.calendar-day.today {
+    border: 2px solid #6366f1;
+    background: #f0f9ff;
+}
+
+.calendar-day-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.calendar-day.today .calendar-day-number {
+    color: #6366f1;
+    font-weight: 700;
+}
+
+.calendar-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.calendar-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    cursor: grab;
+    transition: all 0.2s ease;
+    border-left: 3px solid;
+    overflow: hidden;
+}
+
+.calendar-item:active {
+    cursor: grabbing;
+}
+
+.calendar-item.published {
+    background: #e2e8f0;
+    opacity: 0.7;
+    text-decoration: line-through;
+}
+
+.calendar-item .item-icon {
+    font-size: 11px;
+}
+
+.calendar-item .item-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.published-badge {
+    background: #10b981;
+    color: white;
+    border-radius: 10px;
+    padding: 0px 4px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.calendar-item.empty-slot {
+    background: transparent;
+    border: 1px dashed #cbd5e1;
+    cursor: default;
+    min-height: 28px;
+}
+
+.calendar-more {
+    font-size: 10px;
+    color: #64748b;
+    text-align: center;
+    padding: 4px;
+}
+
+.drag-over {
+    background: #f0f9ff;
+    border: 2px dashed #6366f1;
+}
+
+/* Статистика */
+.stat-tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 8px;
+}
+
+.stat-tag-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.stat-tag-count {
+    font-weight: 700;
+    color: #0f172a;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* Кнопка редактирования в модалке */
+.btn-edit-inline {
+    background: none;
+    border: none;
+    color: #6366f1;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-edit-inline:hover {
+    background: #eef2ff;
+}
+
+.btn-edit-inline.btn-edit-active {
+    background: #10b981;
+    color: white;
+}
+
+.btn-edit-inline.btn-edit-active:hover {
+    background: #059669;
+}
+
+/* Поле редактирования поста */
+.post-content-editable {
+    background: #fefce8;
+    border: 2px solid #6366f1 !important;
+    outline: none;
+}
+
+.post-content-editable:focus {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
