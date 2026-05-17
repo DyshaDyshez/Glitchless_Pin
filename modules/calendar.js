@@ -202,9 +202,6 @@ window.copyModalPostContent = () => {
     }
 };
 
-// modules/calendar.js - исправленные функции
-
-// modules/calendar.js - замени эти функции
 
 export function markAsPublished(id) {
     const item = appState.calendar?.find(c => c.id === id);

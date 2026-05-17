@@ -40,6 +40,7 @@ function truncateForPlatform(post, platform) {
     return post;
 }
 
+// ============ AI ГЕНЕРАЦИЯ (через локальный прокси-сервер) ============
 async function generateAIPost(topic, direction, platform, details = '') {
     const systemPrompt = `Ты профессиональный копирайтер. Напиши ГОТОВЫЙ ПОСТ для публикации.
 Тема: "${topic}"
@@ -51,18 +52,38 @@ ${details ? `Дополнительно: ${details}` : ''}
 2. Используй эмодзи для вовлечения
 3. Разбей на короткие абзацы
 4. Добавь призыв к действию
-5. В конце добавь 3-5 хэштегов
-6. НЕ используй Markdown звёздочки (** и *), пиши обычным текстом
-7. Соблюдай ограничение по символам: для Pinterest - 800, Instagram - 2200, Telegram - 4096`;
-    
+5. В конце добавь 3-5 хэштегов`;
+
     try {
-        const response = await fetch(CONFIG.OPENROUTER_URL, {
+        // Отправляем запрос на ТВОЙ локальный сервер (не напрямую в OpenRouter)
+        const response = await fetch('http://localhost:8000/chat', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.OPENROUTER_API_KEY}`, 'HTTP-Referer': window.location.href, 'X-Title': 'Glitchless Pin' },
-            body: JSON.stringify({ model: 'google/gemini-2.0-flash-lite-001', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Напиши пост на тему: "${topic}"` }], temperature: 0.8, max_tokens: 1500 })
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: 'google/gemini-2.0-flash-lite-001',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `Напиши пост на тему: "${topic}"` }
+                ],
+                temperature: 0.8,
+                max_tokens: 1500
+            })
         });
-        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+        
         const data = await response.json();
+        
+        // Проверяем, нет ли ошибки от сервера
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
         let post = data.choices[0].message.content;
         post = post.replace(/```\w*\n?/g, '').replace(/```/g, '').trim();
         return post;

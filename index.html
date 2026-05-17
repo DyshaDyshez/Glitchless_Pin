@@ -2,16 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glitchless Pin — AI Генератор постов</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="style.css">
-
-
-
 </head>
 <body class="h-screen overflow-hidden">
   <div class="app-shell h-full">
@@ -28,31 +24,31 @@
       <nav class="sidebar__nav">
         <button class="navlink" data-page="planner">
           <i class="fa-regular fa-pen-to-square"></i>
-          <span> Планирование</span>
+          <span>📝 Планирование</span>
         </button>
         <button class="navlink" data-page="templates">
           <i class="fa-regular fa-heart"></i>
-          <span> Шаблоны</span>
+          <span>⭐ Шаблоны</span>
           <span id="templates-badge" class="ml-auto text-xs bg-white/20 px-1.5 py-0.5 rounded-full">0</span>
         </button>
         <button class="navlink" data-page="calendar">
           <i class="fa-regular fa-calendar"></i>
-          <span> Календарь</span>
+          <span>📅 Календарь</span>
         </button>
         <button class="navlink" data-page="statistics">
           <i class="fa-solid fa-chart-line"></i>
-          <span> Статистика</span>
+          <span>📊 Статистика</span>
         </button>
         <button class="navlink" data-page="account">
           <i class="fa-regular fa-user"></i>
-          <span> Аккаунт</span>
+          <span>👤 Аккаунт</span>
         </button>
       </nav>
 
       <div class="sidebar__footer">
         <div class="status-badge">
           <span class="status-dot status-dot--ok"></span>
-          <span> AI активен</span>
+          <span>🤖 AI активен</span>
         </div>
         <div class="flex gap-2">
           <button id="btn-export-json" class="btn btn--ghost btn-sm flex-1">
@@ -75,7 +71,7 @@
         </div>
         <div class="topbar__right">
           <button id="btn-generate-auto" class="btn btn--primary">
-            <i class="fa-regular"></i>
+            <i class="fa-regular fa-wand-magic-sparkles"></i>
             🎲 Авто-идеи
           </button>
         </div>
@@ -90,7 +86,7 @@
             <div class="flex flex-col rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur overflow-hidden">
               <div class="panel-header flex-shrink-0">
                 <div>
-                  <div class="panel-title"> Создание идеи</div>
+                  <div class="panel-title">✨ Создание идеи</div>
                   <div class="panel-subtitle">Опишите тему → AI сделает всё остальное</div>
                 </div>
                 <button id="btn-add-idea" class="btn btn--ghost btn-sm">
@@ -159,13 +155,13 @@
                 </div>
                 <div class="flex gap-2">
                   <button id="btn-add-hashtags" class="btn btn--ghost btn-sm">
-                    <i class="fa-regular fa-hashtag"></i> Хэштеги
+                    <i class="fa-regular fa-hashtag"></i> # Хэштеги
                   </button>
                   <button id="btn-copy-post" class="btn btn--ghost btn-sm">
-                    <i class="fa-regular fa-copy"></i>  Копировать
+                    <i class="fa-regular fa-copy"></i> 📋 Копировать
                   </button>
                   <button id="btn-add-to-calendar" class="btn btn--primary btn-sm">
-                    <i class="fa-regular fa-calendar-plus"></i>  В календарь
+                    <i class="fa-regular fa-calendar-plus"></i> 📅 В календарь
                   </button>
                 </div>
               </div>
@@ -194,10 +190,10 @@
                     <span>📝 Текст поста</span>
                     <div class="flex gap-2">
                       <button id="btn-edit-post" class="text-xs text-indigo-600 hover:text-indigo-800">
-                        <i class="fa-regular "></i> Редактировать
+                        <i class="fa-regular fa-pen"></i> Редактировать
                       </button>
                       <button id="btn-regenerate-post" class="text-xs text-orange-600 hover:text-orange-800">
-                        <i class="fa-regular "></i> Перегенерировать
+                        <i class="fa-regular fa-rotate-right"></i> Перегенерировать
                       </button>
                     </div>
                   </div>
@@ -216,7 +212,7 @@
             <div class="panel-header flex-shrink-0">
               <div>
                 <div class="panel-title">⭐ Избранные шаблоны</div>
-                <div class="panel-subtitle">Лучшие посты, которые вы отметили сердечком</div>
+                <div class="panel-subtitle">Ваши посты сохраняются в облако</div>
               </div>
             </div>
             <div class="flex-1 overflow-y-auto p-4">
@@ -275,7 +271,7 @@
             </div>
             <div class="p-4">
               <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                <i class="fa-regular fa-info-circle"></i> 💾 Все данные хранятся локально. Регулярно делайте экспорт.
+                <i class="fa-regular fa-info-circle"></i> 💾 Шаблоны хранятся в облаке Firebase. API ключ тоже в Firebase.
               </div>
             </div>
           </div>
@@ -293,7 +289,60 @@
     <div id="modal-content" class="modal-content" role="dialog" aria-modal="true"></div>
   </div>
 
-  <!-- Подключаем модули -->
+  <!-- Firebase SDK -->
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from 'firebase/app';
+    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, deleteDoc, query } from 'firebase/firestore';
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_SVpPOc9iQCd1E90nWpjjEjj6h8iuBfY",
+      authDomain: "glitchless-pin.firebaseapp.com",
+      projectId: "glitchless-pin",
+      storageBucket: "glitchless-pin.firebasestorage.app",
+      messagingSenderId: "893815022887",
+      appId: "1:893815022887:web:908f4c0b7c3f8cb4ddf502"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    // Загружаем API ключ из Firestore
+    try {
+      const configDoc = await getDoc(doc(db, 'config', 'api'));
+      if (configDoc.exists()) {
+        window.OPENROUTER_API_KEY = configDoc.data().key;
+        console.log('✅ API ключ загружен из Firestore');
+      } else {
+        console.error('❌ Документ config/api не найден в Firestore');
+        window.OPENROUTER_API_KEY = null;
+      }
+    } catch (error) {
+      console.error('❌ Ошибка загрузки API ключа:', error);
+      window.OPENROUTER_API_KEY = null;
+    }
+    
+    // Делаем Firebase функции глобальными для основного скрипта
+    window.db = db;
+    window.firebaseCollection = collection;
+    window.firebaseDoc = doc;
+    window.firebaseGetDocs = getDocs;
+    window.firebaseSetDoc = setDoc;
+    window.firebaseDeleteDoc = deleteDoc;
+    window.firebaseQuery = query;
+    
+    console.log('✅ Firebase инициализирован');
+  </script>
+
+  <!-- Основной скрипт -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
