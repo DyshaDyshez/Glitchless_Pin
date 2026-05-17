@@ -1,1 +1,0 @@
-firebase functions:config:set openrouter.key="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"
