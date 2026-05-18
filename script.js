@@ -3,6 +3,8 @@ const CONFIG = {
     LS_KEY: 'glitchless-pin-v3',
 };
 
+window.closeModal = closeModal;
+
 // ============ ГЛОБАЛЬНОЕ СОСТОЯНИЕ ============
 let appState = { ideas: [], calendar: [], templates: [], version: 3 };
 let currentIdeaId = null;
@@ -67,9 +69,17 @@ function openModal(html, isDialog = false) {
     modalRoot.classList.remove('hidden');
     if (isDialog) modalContent.classList.add('dialog-modal');
     setTimeout(() => modalBackdrop.classList.add('show'), 10);
+    
+    // Закрытие по клику на backdrop
+    modalBackdrop.onclick = (e) => {
+        if (e.target === modalBackdrop) closeModal();
+    };
+    
     const firstInput = modalContent.querySelector('input, textarea, select');
     if (firstInput) setTimeout(() => firstInput.focus(), 100);
+    
 }
+
 function closeModal() {
     const modalRoot = document.getElementById('modal-root');
     const modalBackdrop = document.getElementById('modal-backdrop');
@@ -89,13 +99,49 @@ function customConfirm(message, title = 'Подтверждение') {
                 <div class="dialog-title">${escapeHtml(title)}</div>
                 <div class="dialog-message">${escapeHtml(message)}</div>
                 <div class="dialog-actions">
-                    <button class="dialog-btn dialog-btn-secondary" onclick="window._dialogResolve(false)">Отмена</button>
-                    <button class="dialog-btn dialog-btn-primary" onclick="window._dialogResolve(true)">Подтвердить</button>
+                    <button class="dialog-btn dialog-btn-secondary" data-confirm-no>Отмена</button>
+                    <button class="dialog-btn dialog-btn-primary" data-confirm-yes>Подтвердить</button>
                 </div>
             </div>
         `;
-        window._dialogResolve = resolve;
-        openModal(html, true);
+        
+        // Открываем модалку
+        const modalRoot = document.getElementById('modal-root');
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = html;
+        modalRoot.classList.remove('hidden');
+        setTimeout(() => modalBackdrop.classList.add('show'), 10);
+        
+        // Обработчики кнопок
+        const yesBtn = modalContent.querySelector('[data-confirm-yes]');
+        const noBtn = modalContent.querySelector('[data-confirm-no]');
+        
+        const cleanup = () => {
+            modalBackdrop.classList.remove('show');
+            setTimeout(() => {
+                modalRoot.classList.add('hidden');
+                modalContent.innerHTML = '';
+            }, 200);
+        };
+        
+        yesBtn.onclick = () => {
+            cleanup();
+            resolve(true);
+        };
+        
+        noBtn.onclick = () => {
+            cleanup();
+            resolve(false);
+        };
+        
+        // Закрытие по клику на фон
+        modalBackdrop.onclick = (e) => {
+            if (e.target === modalBackdrop) {
+                cleanup();
+                resolve(false);
+            }
+        };
     });
 }
 function customPrompt(message, defaultValue = '', title = 'Введите значение') {
@@ -109,13 +155,50 @@ function customPrompt(message, defaultValue = '', title = 'Введите зна
                     <input type="text" id="prompt-input" class="dialog-input" value="${escapeHtml(defaultValue)}" placeholder="Введите текст..." autofocus />
                 </div>
                 <div class="dialog-actions">
-                    <button class="dialog-btn dialog-btn-secondary" onclick="window._dialogResolve(null)">Отмена</button>
-                    <button class="dialog-btn dialog-btn-primary" onclick="window._dialogResolve(document.getElementById('prompt-input')?.value || '')">OK</button>
+                    <button class="dialog-btn dialog-btn-secondary" data-prompt-cancel>Отмена</button>
+                    <button class="dialog-btn dialog-btn-primary" data-prompt-ok>OK</button>
                 </div>
             </div>
         `;
-        window._dialogResolve = resolve;
-        openModal(html, true);
+        
+        const modalRoot = document.getElementById('modal-root');
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = html;
+        modalRoot.classList.remove('hidden');
+        setTimeout(() => modalBackdrop.classList.add('show'), 10);
+        
+        const input = modalContent.querySelector('#prompt-input');
+        const okBtn = modalContent.querySelector('[data-prompt-ok]');
+        const cancelBtn = modalContent.querySelector('[data-prompt-cancel]');
+        
+        const cleanup = () => {
+            modalBackdrop.classList.remove('show');
+            setTimeout(() => {
+                modalRoot.classList.add('hidden');
+                modalContent.innerHTML = '';
+            }, 200);
+        };
+        
+        okBtn.onclick = () => {
+            const value = input?.value || '';
+            cleanup();
+            resolve(value);
+        };
+        
+        cancelBtn.onclick = () => {
+            cleanup();
+            resolve(null);
+        };
+        
+        modalBackdrop.onclick = (e) => {
+            if (e.target === modalBackdrop) {
+                cleanup();
+                resolve(null);
+            }
+        };
+        
+        setTimeout(() => input?.focus(), 100);
     });
 }
 window._dialogResolve = null;
@@ -494,10 +577,16 @@ function openPostModal(calendarItem) {
     const isPublished = calendarItem.published || false;
     const DIR_ICONS = { Экспертность: '🎓', Польза: '💡', Продажа: '💰' };
     const TAG_ICONS = { Pinterest: '📌', Insta: '📸', TG: '✈️', Блог: '📝' };
-    const safePostText = (idea.postText || 'Текст не сгенерирован').replace(/'/g, "\\'");
+    
     const html = `
         <div class="post-modal">
-            <div class="modal-header"><div class="modal-title"><span class="modal-icon">${DIR_ICONS[calendarItem.direction] || '📝'}</span> ${escapeHtml(idea.topic || 'Без темы')}</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="modal-icon">${DIR_ICONS[calendarItem.direction] || '📝'}</span> 
+                    ${escapeHtml(idea.topic || 'Без темы')}
+                </div>
+                <button class="modal-close" data-close-modal>✕</button>
+            </div>
             <div class="modal-meta">
                 <div class="meta-item"><span class="meta-label">📅 Дата:</span><span class="meta-value">${calendarItem.date}</span></div>
                 <div class="meta-item"><span class="meta-label">📱 Платформа:</span><span class="meta-value">${TAG_ICONS[calendarItem.tagKey] || '📌'} ${calendarItem.tagKey}</span></div>
@@ -505,14 +594,18 @@ function openPostModal(calendarItem) {
                 <div class="meta-item"><span class="meta-label">📌 Статус:</span><span class="status-badge ${isPublished ? 'published' : 'draft'}">${isPublished ? '✅ Опубликован' : '📝 Черновик'}</span></div>
             </div>
             <div class="modal-divider"></div>
-            <div class="modal-section"><div class="section-title">📝 Текст поста</div><div class="post-content" id="modal-post-content" style="white-space: pre-wrap;">${escapeHtml(idea.postText || 'Текст не сгенерирован')}</div><textarea id="modal-post-textarea" style="display:none; width:100%; min-height:200px; padding:12px; border-radius:12px; border:2px solid #6366f1; font-family:inherit; font-size:14px;">${escapeHtml(idea.postText || '')}</textarea></div>
+            <div class="modal-section">
+                <div class="section-title">📝 Текст поста</div>
+                <div class="post-content" id="modal-post-content" style="white-space: pre-wrap;">${escapeHtml(idea.postText || 'Текст не сгенерирован')}</div>
+                <textarea id="modal-post-textarea" style="display:none; width:100%; min-height:200px; padding:12px; border-radius:12px; border:2px solid #6366f1; font-family:inherit; font-size:14px;">${escapeHtml(idea.postText || '')}</textarea>
+            </div>
             ${calendarItem.notes ? `<div class="modal-section"><div class="section-title">📌 Заметки</div><div class="notes-content">${escapeHtml(calendarItem.notes)}</div></div>` : ''}
             <div class="modal-divider"></div>
             <div class="modal-actions">
                 <button class="btn btn--secondary" id="modal-copy-btn">📋 Копировать текст</button>
                 <button class="btn btn--secondary" id="modal-edit-toggle-btn">✏️ Редактировать</button>
-                ${!isPublished ? `<button class="btn btn--success" onclick="window.markAsPublished('${calendarItem.id}')">✅ Отметить как опубликованный</button>` : `<button class="btn btn--warning" onclick="window.markAsDraft('${calendarItem.id}')">📝 Вернуть в черновики</button>`}
-                <button class="btn btn--ghost" onclick="closeModal()">Закрыть</button>
+                ${!isPublished ? `<button class="btn btn--success" id="modal-publish-btn">✅ Отметить как опубликованный</button>` : `<button class="btn btn--warning" id="modal-draft-btn">📝 Вернуть в черновики</button>`}
+                <button class="btn btn--ghost" id="modal-close-btn">Закрыть</button>
             </div>
         </div>
     `;
@@ -523,7 +616,30 @@ function openPostModal(calendarItem) {
         const textarea = document.getElementById('modal-post-textarea');
         const editBtn = document.getElementById('modal-edit-toggle-btn');
         const copyBtn = document.getElementById('modal-copy-btn');
+        const closeBtn = document.getElementById('modal-close-btn');
+        const publishBtn = document.getElementById('modal-publish-btn');
+        const draftBtn = document.getElementById('modal-draft-btn');
+        
         let isEditMode = false;
+        
+        // Закрытие модалки
+        if (closeBtn) {
+            closeBtn.onclick = () => closeModal();
+        }
+        
+        // Обработчик публикации
+        if (publishBtn) {
+            publishBtn.onclick = () => {
+                markAsPublished(calendarItem.id);
+            };
+        }
+        
+        // Обработчик черновика
+        if (draftBtn) {
+            draftBtn.onclick = () => {
+                markAsDraft(calendarItem.id);
+            };
+        }
         
         if (editBtn) {
             editBtn.onclick = () => {
@@ -551,6 +667,7 @@ function openPostModal(calendarItem) {
                 }
             };
         }
+        
         if (copyBtn) {
             copyBtn.onclick = () => {
                 const textToCopy = isEditMode ? textarea.value : contentDiv.innerText;
@@ -716,7 +833,7 @@ function openHashtagsModal() {
         '📌 Pinterest': ['#pinterest','#pinterestmarketing','#pinspiration','#pintereststrategy','#pinteresttips','#пинтерест'],
         '📝 Блогинг': ['#blogger','#blogging','#influencer','#contentmarketing','#digitalcreator','#блогер']
     };
-    let html = `<div class="hashtags-modal"><div class="modal-header"><div class="modal-title">🏷️ Добавить хэштеги</div><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body"><div class="hashtags-categories">`;
+    let html = `<div class="hashtags-modal"><div class="modal-header"><div class="modal-title">🏷️ Добавить хэштеги</div><button class="modal-close" data-close-modal>✕</button></div><div class="modal-body"><div class="hashtags-categories">`;
     for (const [cat, tags] of Object.entries(categories)) {
         html += `<div class="hashtag-category"><div class="category-title">${cat}</div><div class="category-tags">${tags.map(t => `<button class="hashtag-btn" onclick="addHashtagToEditor('${t}')">${t}</button>`).join('')}</div></div>`;
     }
@@ -812,3 +929,4 @@ function init() {
 
 // Запуск
 document.addEventListener('DOMContentLoaded', init);
+window.closeModal = closeModal;
