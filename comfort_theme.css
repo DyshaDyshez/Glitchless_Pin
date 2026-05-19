@@ -1,0 +1,251 @@
+/* Comfort (new): спокойная “читабельная” замена розовой темы */
+
+:root{
+  --theme-name:"comfort";
+}
+
+/* Базовая палитра */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"]{
+  --primary:#64748b;        /* стальной, хорошо читается */
+  --primary-dark:#334155;
+  --secondary:#38bdf8;      /* мягкий бирюзовый акцент */
+
+  --bg-0:#f8fafc;
+  --bg-1:#eef2ff;
+  --bg-2:#e0f2fe;
+
+  --panel:rgba(255,255,255,.78);
+  --panel-strong:rgba(255,255,255,.95);
+  --line:rgba(51,65,85,.14);
+  --line-2:rgba(56,189,248,.22);
+
+  --text:#0f172a;
+  --muted:rgba(15,23,42,.62);
+  --muted-2:rgba(15,23,42,.42);
+
+  --shadow:0 12px 40px rgba(56,189,248,.16);
+  --shadow-soft:0 6px 18px rgba(56,189,248,.10);
+
+  --card-bg:rgba(255,255,255,.82);
+  --btn-ghost-bg:rgba(56,189,248,.10);
+  --btn-ghost-border:rgba(56,189,248,.28);
+
+  --calendar-bg:rgba(255,255,255,.90);
+
+  --focus-ring:rgba(56,189,248,.26);
+}
+
+/* Фон (в проекте background частично задаётся inline в script.js — поэтому используем !important) */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"]{
+  background:
+    radial-gradient(1200px 600px at 8% 0%, rgba(56,189,248,.20) 0%, rgba(56,189,248,0) 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(99,102,241,.14) 0%, rgba(99,102,241,0) 55%),
+    linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] body{
+  background:
+    radial-gradient(1100px 520px at 12% 0%, rgba(56,189,248,.18) 0%, rgba(56,189,248,0) 62%),
+    radial-gradient(900px 520px at 90% 12%, rgba(99,102,241,.14) 0%, rgba(99,102,241,0) 55%),
+    linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%) !important;
+}
+
+/* Sidebar / Topbar */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .sidebar{
+  background: rgba(255,255,255,0.75) !important;
+  border-right: 1px solid var(--line) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .sidebar__logo{
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .topbar{
+  background: rgba(255,255,255,.62) !important;
+  border-bottom: 1px solid rgba(51,65,85,.14) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .panel-header,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .panel-footer{
+  background: rgba(255,255,255,.58) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .panel-title,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .section-title,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .panel-subtitle{
+  color: var(--text) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .panel-subtitle,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .stat-label,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .post-output{
+  color: var(--muted) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .label{
+  color: rgba(15,23,42,.72) !important;
+}
+
+/* Inputs */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .input,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] select.input{
+  background: rgba(255,255,255,.90) !important;
+  border-color: rgba(51,65,85,.18) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .input:focus,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] select.input:focus{
+  border-color: var(--secondary) !important;
+  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+}
+
+/* Buttons */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .btn--primary{
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%) !important;
+  color: white !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .btn--ghost{
+  background: var(--btn-ghost-bg) !important;
+  border-color: var(--btn-ghost-border) !important;
+  color: rgba(15,23,42,.84) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .btn{
+  border-color: rgba(51,65,85,.18) !important;
+}
+
+/* Cards */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .stat-card,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .idea-card,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .template-card,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-shell{
+  background: var(--card-bg) !important;
+  border-color: rgba(15,23,42,.12) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+/* Tags */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .idea-tag,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .template-tag{
+  background: rgba(56,189,248,.10) !important;
+  color: rgba(15,23,42,.86) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .idea-direction,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .template-direction{
+  background: rgba(56,189,248,.14) !important;
+  color: rgba(2,132,199,.95) !important;
+}
+
+/* Calendar */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-day{
+  background: rgba(255,255,255,.86) !important;
+  border-color: rgba(51,65,85,.14) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-day.today{
+  border-color: rgba(56,189,248,.72) !important;
+  background: rgba(224,242,254,.78) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-day-number{
+  color: rgba(15,23,42,.56) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-item{
+  background: rgba(255,255,255,.72) !important;
+  border-left-color: rgba(51,65,85,.42) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-item.empty-slot{
+  border-color: rgba(51,65,85,.25) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-nav-btn{
+  background: rgba(255,255,255,.90) !important;
+  border-color: rgba(51,65,85,.18) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .calendar-today-btn{
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+}
+
+/* Dialogs / Modals */
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .custom-dialog{
+  color: var(--text);
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .dialog-title{
+  color: var(--text) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .dialog-input,
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .dialog-btn-primary{
+  background: transparent;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .dialog-input{
+  background: rgba(255,255,255,.88) !important;
+  border-color: rgba(51,65,85,.18) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .dialog-btn-primary{
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .modal-content{
+  background: rgba(255,255,255,.94) !important;
+  border: 1px solid rgba(51,65,85,.14);
+}
+
+html[data-theme="comfort"],
+html[data-theme="comfort_theme"] .modal-header{
+  border-bottom-color: rgba(51,65,85,.16) !important;
+}
+

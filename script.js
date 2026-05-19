@@ -1153,9 +1153,12 @@ function initThemeSwitcher() {
         <button class="theme-btn" data-theme="light" title="Светлая тема">☀️</button>
         <button class="theme-btn" data-theme="dark" title="Тёмная тема">🌙</button>
 
-        <button class="theme-btn" data-theme="moon" title="Лунная ночь">🌙</button>
+        <button class="theme-btn" data-theme="moon" title="Лунная ночь">🌘</button>
+
 
         <button class="theme-btn" data-theme="green" title="Розовая тема">🌸</button>
+        
+        <button class="theme-btn" data-theme="comfort" title="Комфортная тема">🌿</button>
     `;
     
     // Вставляем перед кнопками экспорта
