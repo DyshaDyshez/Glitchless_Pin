@@ -256,17 +256,22 @@ async function generateAIPost(topic, direction, platform, details = '') {
     if (!API_KEY) {
         throw new Error('API ключ не загружен. Проверьте Firestore (config/api)');
     }
+    
     const systemPrompt = `Ты профессиональный копирайтер. Напиши ГОТОВЫЙ ПОСТ для публикации.
 Тема: "${topic}"
 Платформа: ${platform}
 Направление: ${direction}
 ${details ? `Дополнительно: ${details}` : ''}
-Требования:
+
+ВАЖНЫЕ ПРАВИЛА:
 1. Начни с цепляющего заголовка
-2. Используй эмодзи для вовлечения
-3. Разбей на короткие абзацы
+2. Используй эмодзи для вовлечения (но не перебарщивай)
+3. Разбей на короткие абзацы (по 1-2 предложения)
 4. Добавь призыв к действию
-5. В конце добавь 3-5 хэштегов`;
+5. В конце добавь 3-5 хэштегов
+6. НЕ используй markdown-разметку (звёздочки, решётки, подчёркивания)
+7. НЕ используй символы-разделители (***, ---, ___)
+8. Пиши чистым текстом, без форматирования`;
 
     try {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -287,14 +292,32 @@ ${details ? `Дополнительно: ${details}` : ''}
                 max_tokens: 1500
             })
         });
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error?.message || `HTTP ${response.status}`);
         }
+        
         const data = await response.json();
         let post = data.choices[0].message.content;
-        post = post.replace(/```\w*\n?/g, '').replace(/```/g, '').trim();
+        
+        // 🧹 ОЧИСТКА ОТ ВСЯКОГО ФОРМАТИРОВАНИЯ
+        post = post
+            .replace(/```\w*\n?/g, '')        // Убираем markdown-блоки
+            .replace(/```/g, '')              // Убираем закрывающие ```
+            .replace(/\*\*\*/g, '')           // Убираем ***
+            .replace(/---/g, '')              // Убираем ---
+            .replace(/___/g, '')              // Убираем ___
+            .replace(/\*\*/g, '')             // Убираем **жирный**
+            .replace(/__/g, '')               // Убираем __жирный__
+            .replace(/\*(?!\s)/g, '')         // Убираем *курсив* (но не маркеры списков)
+            .replace(/_(?!\s)/g, '')          // Убираем _курсив_
+            .replace(/#{1,6}\s/g, '')         // Убираем # заголовки
+            .replace(/\n{3,}/g, '\n\n')       // Максимум 2 переноса подряд
+            .trim();
+        
         return post;
+        
     } catch (error) {
         console.error('AI Error:', error);
         throw new Error(`Ошибка генерации: ${error.message}`);
@@ -1070,7 +1093,9 @@ async function init() {
     setActivePage('planner');
     
     showNotification('🎉 Glitchless Pin готов! Шаблоны синхронизированы с облаком ☁️', 'success');
+    initThemeSwitcher();
 }
+
 
 // Экспорт
 function exportToJSON() {
@@ -1118,6 +1143,7 @@ function exportToExcel() {
 // ============ ПЕРЕКЛЮЧЕНИЕ ТЕМ ============
 function initThemeSwitcher() {
     const sidebarFooter = document.querySelector('.sidebar__footer');
+
     if (!sidebarFooter) return;
     
     // Создаём переключатель тем
@@ -1126,8 +1152,10 @@ function initThemeSwitcher() {
     switcher.innerHTML = `
         <button class="theme-btn" data-theme="light" title="Светлая тема">☀️</button>
         <button class="theme-btn" data-theme="dark" title="Тёмная тема">🌙</button>
-        <button class="theme-btn" data-theme="pink" title="Розовая тема">🌸</button>
-        <button class="theme-btn" data-theme="green" title="Зелёная тема">🌿</button>
+
+        <button class="theme-btn" data-theme="moon" title="Лунная ночь">🌙</button>
+
+        <button class="theme-btn" data-theme="green" title="Розовая тема">🌸</button>
     `;
     
     // Вставляем перед кнопками экспорта
@@ -1160,6 +1188,9 @@ function applyTheme(theme) {
         light: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         dark: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)',
         pink: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+        second: 'linear-gradient(135deg, #fff7fb 0%, #ffe4f3 45%, #ffd1ea 100%)',
+        moon: 'linear-gradient(135deg, #050815 0%, #0b1230 45%, #0f1b44 100%)',
+
         green: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)'
     };
     document.body.style.background = gradients[theme] || gradients.light;

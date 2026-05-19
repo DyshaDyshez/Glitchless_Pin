@@ -1,0 +1,328 @@
+:root{
+  --theme-name:"moon";
+}
+
+/* Лунная тема: мягкие прозрачные слои + полуразмытая полная луна */
+html[data-theme="moon"],
+html[data-theme="moon_theme"],
+html[data-theme="night"],
+html[data-theme="lunar"]{
+  --primary:#a78bfa;     /* фиолетовая луна */
+  --primary-dark:#7c3aed;
+  --secondary:#67e8f9;   /* холодный туман */
+
+  --bg-0:#050815;
+  --bg-1:#0b1230;
+  --bg-2:#0f1b44;
+
+  --panel:rgba(15, 23, 42, .55);
+  --panel-strong:rgba(15, 23, 42, .78);
+  --line:rgba(167,139,250,.18);
+  --line-2:rgba(103,232,249,.16);
+
+  --text:rgba(226,232,240,.96);
+  --muted:rgba(226,232,240,.68);
+  --muted-2:rgba(226,232,240,.45);
+
+  --shadow:0 18px 60px rgba(167,139,250,.16);
+  --shadow-soft:0 10px 30px rgba(167,139,250,.12);
+
+  --card-bg:rgba(15,23,42,.46);
+  --btn-ghost-bg:rgba(167,139,250,.12);
+  --btn-ghost-border:rgba(167,139,250,.22);
+
+  --focus-ring:rgba(167,139,250,.28);
+}
+
+/* Полуразмытая полная луна как фон */
+html[data-theme="moon"],
+html[data-theme="moon_theme"],
+html[data-theme="night"],
+html[data-theme="lunar"]{
+  background:
+    radial-gradient(1200px 650px at 10% -10%, rgba(103,232,249,.18) 0%, rgba(103,232,249,0) 55%),
+    radial-gradient(900px 520px at 90% 0%, rgba(167,139,250,.22) 0%, rgba(167,139,250,0) 50%),
+    /* Луна */
+    radial-gradient(circle at 78% 18%, rgba(255,255,255,.85) 0%, rgba(255,255,255,.65) 22%, rgba(255,255,255,.25) 38%, rgba(255,255,255,.08) 52%, rgba(255,255,255,0) 68%),
+    /* Мягкое свечение луны */
+    radial-gradient(circle at 78% 18%, rgba(167,139,250,.26) 0%, rgba(167,139,250,0) 58%),
+    linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%) !important;
+}
+
+html[data-theme="moon"],
+html[data-theme="moon_theme"],
+html[data-theme="night"],
+html[data-theme="lunar"] body{
+  background:
+    radial-gradient(1200px 650px at 10% -10%, rgba(103,232,249,.18) 0%, rgba(103,232,249,0) 55%),
+    radial-gradient(900px 520px at 90% 0%, rgba(167,139,250,.22) 0%, rgba(167,139,250,0) 50%),
+    radial-gradient(circle at 78% 18%, rgba(255,255,255,.85) 0%, rgba(255,255,255,.65) 22%, rgba(255,255,255,.25) 38%, rgba(255,255,255,.08) 52%, rgba(255,255,255,0) 68%),
+    radial-gradient(circle at 78% 18%, rgba(167,139,250,.26) 0%, rgba(167,139,250,0) 58%),
+    linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%) !important;
+}
+
+/* Сайдбар/топбар */
+html[data-theme="moon"] .sidebar,
+html[data-theme="moon_theme"] .sidebar,
+html[data-theme="night"] .sidebar,
+html[data-theme="lunar"] .sidebar{
+  background: var(--panel) !important;
+  border-right: 1px solid var(--line) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="moon"] .topbar,
+html[data-theme="moon_theme"] .topbar,
+html[data-theme="night"] .topbar,
+html[data-theme="lunar"] .topbar{
+  background: rgba(15,23,42,.42) !important;
+  border-bottom: 1px solid rgba(167,139,250,.22) !important;
+}
+
+html[data-theme="moon"] .panel-header,
+html[data-theme="moon_theme"] .panel-header,
+html[data-theme="night"] .panel-header,
+html[data-theme="lunar"] .panel-header,
+html[data-theme="moon"] .panel-footer,
+html[data-theme="moon_theme"] .panel-footer,
+html[data-theme="night"] .panel-footer,
+html[data-theme="lunar"] .panel-footer{
+  background: rgba(15,23,42,.40) !important;
+  border-color: rgba(167,139,250,.18) !important;
+}
+
+/* Типографика */
+html[data-theme="moon"] .panel-title,
+html[data-theme="moon_theme"] .panel-title,
+html[data-theme="night"] .panel-title,
+html[data-theme="lunar"] .panel-title,
+html[data-theme="moon"] .section-title,
+html[data-theme="moon_theme"] .section-title,
+html[data-theme="night"] .section-title,
+html[data-theme="lunar"] .section-title{
+  color: var(--text) !important;
+}
+
+html[data-theme="moon"] .panel-subtitle,
+html[data-theme="moon_theme"] .panel-subtitle,
+html[data-theme="night"] .panel-subtitle,
+html[data-theme="lunar"] .panel-subtitle{
+  color: var(--muted) !important;
+}
+
+html[data-theme="moon"] .label,
+html[data-theme="moon_theme"] .label,
+html[data-theme="night"] .label,
+html[data-theme="lunar"] .label{
+  color: var(--muted) !important;
+}
+
+/* Инпуты */
+html[data-theme="moon"] .input,
+html[data-theme="moon_theme"] .input,
+html[data-theme="night"] .input,
+html[data-theme="lunar"] .input,
+html[data-theme="moon"] select.input,
+html[data-theme="moon_theme"] select.input,
+html[data-theme="night"] select.input,
+html[data-theme="lunar"] select.input{
+  background: rgba(2, 6, 23, .35) !important;
+  color: var(--text) !important;
+  border-color: rgba(167,139,250,.28) !important;
+}
+
+html[data-theme="moon"] .input::placeholder,
+html[data-theme="moon_theme"] .input::placeholder,
+html[data-theme="night"] .input::placeholder,
+html[data-theme="lunar"] .input::placeholder{
+  color: rgba(226,232,240,.45) !important;
+}
+
+html[data-theme="moon"] .input:focus,
+html[data-theme="moon_theme"] .input:focus,
+html[data-theme="night"] .input:focus,
+html[data-theme="lunar"] .input:focus,
+html[data-theme="moon"] select.input:focus,
+html[data-theme="moon_theme"] select.input:focus,
+html[data-theme="night"] select.input:focus,
+html[data-theme="lunar"] select.input:focus{
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+}
+
+/* Post output */
+html[data-theme="moon"] .post-output,
+html[data-theme="moon_theme"] .post-output,
+html[data-theme="night"] .post-output,
+html[data-theme="lunar"] .post-output{
+  background: rgba(15,23,42,.45) !important;
+  border-color: rgba(167,139,250,.24) !important;
+  color: var(--text) !important;
+}
+
+/* Кнопки */
+html[data-theme="moon"] .btn--primary,
+html[data-theme="moon_theme"] .btn--primary,
+html[data-theme="night"] .btn--primary,
+html[data-theme="lunar"] .btn--primary{
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  color: white !important;
+  border: none !important;
+}
+
+html[data-theme="moon"] .btn--ghost,
+html[data-theme="moon_theme"] .btn--ghost,
+html[data-theme="night"] .btn--ghost,
+html[data-theme="lunar"] .btn--ghost{
+  background: var(--btn-ghost-bg) !important;
+  border-color: var(--btn-ghost-border) !important;
+  color: rgba(226,232,240,.88) !important;
+}
+
+html[data-theme="moon"] .btn,
+html[data-theme="moon_theme"] .btn,
+html[data-theme="night"] .btn,
+html[data-theme="lunar"] .btn{
+  border-color: rgba(167,139,250,.20) !important;
+}
+
+/* Карточки */
+html[data-theme="moon"] .stat-card,
+html[data-theme="moon_theme"] .stat-card,
+html[data-theme="night"] .stat-card,
+html[data-theme="lunar"] .stat-card,
+html[data-theme="moon"] .idea-card,
+html[data-theme="moon_theme"] .idea-card,
+html[data-theme="night"] .idea-card,
+html[data-theme="lunar"] .idea-card,
+html[data-theme="moon"] .template-card,
+html[data-theme="moon_theme"] .template-card,
+html[data-theme="night"] .template-card,
+html[data-theme="lunar"] .template-card,
+html[data-theme="moon"] .calendar-shell,
+html[data-theme="moon_theme"] .calendar-shell,
+html[data-theme="night"] .calendar-shell,
+html[data-theme="lunar"] .calendar-shell{
+  background: rgba(15,23,42,.46) !important;
+  border-color: rgba(167,139,250,.18) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+/* Диалоги */
+html[data-theme="moon"] .modal-content,
+html[data-theme="moon_theme"] .modal-content,
+html[data-theme="night"] .modal-content,
+html[data-theme="lunar"] .modal-content{
+  background: rgba(15,23,42,.68) !important;
+  border: 1px solid rgba(167,139,250,.18);
+  color: var(--text) !important;
+}
+
+html[data-theme="moon"] .modal-header,
+html[data-theme="moon_theme"] .modal-header,
+html[data-theme="night"] .modal-header,
+html[data-theme="lunar"] .modal-header{
+  border-bottom-color: rgba(167,139,250,.22) !important;
+}
+
+html[data-theme="moon"] .custom-dialog,
+html[data-theme="moon_theme"] .custom-dialog,
+html[data-theme="night"] .custom-dialog,
+html[data-theme="lunar"] .custom-dialog{
+  color: var(--text);
+}
+
+html[data-theme="moon"] .dialog-title,
+html[data-theme="moon_theme"] .dialog-title,
+html[data-theme="night"] .dialog-title,
+html[data-theme="lunar"] .dialog-title{
+  color: var(--text) !important;
+}
+
+html[data-theme="moon"] .dialog-message,
+html[data-theme="moon_theme"] .dialog-message,
+html[data-theme="night"] .dialog-message,
+html[data-theme="lunar"] .dialog-message{
+  color: var(--muted) !important;
+}
+
+html[data-theme="moon"] .dialog-input,
+html[data-theme="moon_theme"] .dialog-input,
+html[data-theme="night"] .dialog-input,
+html[data-theme="lunar"] .dialog-input{
+  background: rgba(2, 6, 23, .30) !important;
+  border-color: rgba(167,139,250,.26) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="moon"] .dialog-btn-primary,
+html[data-theme="moon_theme"] .dialog-btn-primary,
+html[data-theme="night"] .dialog-btn-primary,
+html[data-theme="lunar"] .dialog-btn-primary{
+  background: linear-gradient(135deg, var(--primary), rgba(255,255,255,.18)) !important;
+}
+
+html[data-theme="moon"] .dialog-btn-secondary,
+html[data-theme="moon_theme"] .dialog-btn-secondary,
+html[data-theme="night"] .dialog-btn-secondary,
+html[data-theme="lunar"] .dialog-btn-secondary{
+  background: rgba(226,232,240,.08) !important;
+  color: rgba(226,232,240,.88) !important;
+}
+
+/* Календарь */
+html[data-theme="moon"] .calendar-day,
+html[data-theme="moon_theme"] .calendar-day,
+html[data-theme="night"] .calendar-day,
+html[data-theme="lunar"] .calendar-day{
+  background: rgba(2, 6, 23, .28) !important;
+  border-color: rgba(167,139,250,.18) !important;
+}
+
+html[data-theme="moon"] .calendar-day.today,
+html[data-theme="moon_theme"] .calendar-day.today,
+html[data-theme="night"] .calendar-day.today,
+html[data-theme="lunar"] .calendar-day.today{
+  border-color: rgba(167,139,250,.55) !important;
+  background: rgba(167,139,250,.10) !important;
+}
+
+html[data-theme="moon"] .calendar-day-number,
+html[data-theme="moon_theme"] .calendar-day-number,
+html[data-theme="night"] .calendar-day-number,
+html[data-theme="lunar"] .calendar-day-number{
+  color: rgba(226,232,240,.58) !important;
+}
+
+html[data-theme="moon"] .calendar-item,
+html[data-theme="moon_theme"] .calendar-item,
+html[data-theme="night"] .calendar-item,
+html[data-theme="lunar"] .calendar-item{
+  background: rgba(15,23,42,.28) !important;
+  color: rgba(226,232,240,.9) !important;
+  border-left-color: rgba(167,139,250,.42) !important;
+}
+
+html[data-theme="moon"] .calendar-item.empty-slot,
+html[data-theme="moon_theme"] .calendar-item.empty-slot,
+html[data-theme="night"] .calendar-item.empty-slot,
+html[data-theme="lunar"] .calendar-item.empty-slot{
+  border-color: rgba(167,139,250,.26) !important;
+}
+
+html[data-theme="moon"] .calendar-nav-btn,
+html[data-theme="moon_theme"] .calendar-nav-btn,
+html[data-theme="night"] .calendar-nav-btn,
+html[data-theme="lunar"] .calendar-nav-btn{
+  background: rgba(15,23,42,.38) !important;
+  border-color: rgba(167,139,250,.18) !important;
+  color: var(--text);
+}
+
+html[data-theme="moon"] .calendar-today-btn,
+html[data-theme="moon_theme"] .calendar-today-btn,
+html[data-theme="night"] .calendar-today-btn,
+html[data-theme="lunar"] .calendar-today-btn{
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+}
+

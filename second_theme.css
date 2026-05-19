@@ -1,0 +1,323 @@
+:root{
+  --theme-name:"second";
+}
+
+/* Пастельная цветочная нежная тема (pink-floral) */
+html[data-theme="second"],
+html[data-theme="second_theme"],
+html[data-theme="flower"],
+html[data-theme="pink"]{
+  --primary:#f472b6;              /* розовый цветок */
+  --primary-dark:#ec4899;
+  --secondary:#f9a8d4;           /* пудровый */
+
+  --bg-0:#fff7fb;                /* очень светлый */
+  --bg-1:#ffe4f3;                /* розовая пастель */
+  --bg-2:#ffd1ea;
+  --panel:rgba(255,255,255,.72);
+  --panel-strong:rgba(255,255,255,.9);
+  --line:rgba(236,72,153,.18);
+  --line-2:rgba(236,72,153,.28);
+
+  --text:#1f2937;
+  --muted:rgba(31,41,55,.62);
+  --muted-2:rgba(31,41,55,.42);
+
+  --shadow:0 12px 40px rgba(236,72,153,.16);
+  --shadow-soft:0 6px 18px rgba(236,72,153,.10);
+
+  --card-bg:rgba(255,255,255,.78);
+  --btn-ghost-bg:rgba(244,114,182,.10);
+  --btn-ghost-border:rgba(244,114,182,.24);
+
+  --calendar-bg:rgba(255,255,255,.86);
+
+  --focus-ring:rgba(236,72,153,.22);
+}
+
+/* Фоновая заливка body */
+html[data-theme="second"],
+html[data-theme="second_theme"],
+html[data-theme="flower"],
+html[data-theme="pink"]{
+  background: radial-gradient(1200px 600px at 10% 0%, rgba(244,114,182,.25) 0%, rgba(244,114,182,0) 60%),
+              radial-gradient(900px 500px at 90% 10%, rgba(249,168,212,.30) 0%, rgba(249,168,212,0) 55%),
+              linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%) !important;
+}
+
+/* Важно: в project body background задаётся inline-стилем в script.js.
+   Поэтому здесь лишь минимально подменяем, чтобы эффекта хватило на большинстве браузеров.
+*/
+html[data-theme="second"],
+html[data-theme="second_theme"],
+html[data-theme="flower"],
+html[data-theme="pink"] body{
+  background: radial-gradient(1100px 520px at 12% 0%, rgba(244,114,182,.25) 0%, rgba(244,114,182,0) 62%),
+              radial-gradient(900px 520px at 90% 12%, rgba(249,168,212,.35) 0%, rgba(249,168,212,0) 55%),
+              linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%) !important;
+}
+
+/* Основные контейнеры */
+html[data-theme="second"] .sidebar,
+html[data-theme="second_theme"] .sidebar,
+html[data-theme="flower"] .sidebar,
+html[data-theme="pink"] .sidebar{
+  background: rgba(255, 255, 255, 0.70) !important;
+  border-right: 1px solid var(--line);
+}
+
+html[data-theme="second"] .sidebar__logo,
+html[data-theme="second_theme"] .sidebar__logo,
+html[data-theme="flower"] .sidebar__logo,
+html[data-theme="pink"] .sidebar__logo{
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+html[data-theme="second"] .topbar,
+html[data-theme="second_theme"] .topbar,
+html[data-theme="flower"] .topbar,
+html[data-theme="pink"] .topbar{
+  background: rgba(255,255,255,.60) !important;
+  border-bottom: 1px solid rgba(236,72,153,.22) !important;
+}
+
+html[data-theme="second"] .panel-header,
+html[data-theme="second_theme"] .panel-header,
+html[data-theme="flower"] .panel-header,
+html[data-theme="pink"] .panel-header,
+html[data-theme="second"] .panel-footer,
+html[data-theme="second_theme"] .panel-footer,
+html[data-theme="flower"] .panel-footer,
+html[data-theme="pink"] .panel-footer{
+  background: rgba(255,255,255,.55) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="second"] .panel-title,
+html[data-theme="second_theme"] .panel-title,
+html[data-theme="flower"] .panel-title,
+html[data-theme="pink"] .panel-title,
+html[data-theme="second"] .section-title,
+html[data-theme="second_theme"] .section-title,
+html[data-theme="flower"] .section-title,
+html[data-theme="pink"] .section-title{
+  color: var(--text) !important;
+}
+
+html[data-theme="second"] .panel-subtitle,
+html[data-theme="second_theme"] .panel-subtitle,
+html[data-theme="flower"] .panel-subtitle,
+html[data-theme="pink"] .panel-subtitle,
+html[data-theme="second"] .stat-label,
+html[data-theme="second_theme"] .stat-label,
+html[data-theme="flower"] .stat-label,
+html[data-theme="pink"] .stat-label,
+html[data-theme="second"] .post-output,
+html[data-theme="second_theme"] .post-output,
+html[data-theme="flower"] .post-output,
+html[data-theme="pink"] .post-output{
+  color: var(--muted) !important;
+}
+
+/* Текст/лейблы/инпуты */
+html[data-theme="second"] .label,
+html[data-theme="second_theme"] .label,
+html[data-theme="flower"] .label,
+html[data-theme="pink"] .label{
+  color: rgba(31,41,55,.72) !important;
+}
+
+html[data-theme="second"] .input,
+html[data-theme="second_theme"] .input,
+html[data-theme="flower"] .input,
+html[data-theme="pink"] .input,
+html[data-theme="second"] select.input,
+html[data-theme="second_theme"] select.input,
+html[data-theme="flower"] select.input,
+html[data-theme="pink"] select.input{
+  background: rgba(255,255,255,.86) !important;
+  border-color: rgba(236,72,153,.35) !important;
+}
+
+html[data-theme="second"] .input:focus,
+html[data-theme="second_theme"] .input:focus,
+html[data-theme="flower"] .input:focus,
+html[data-theme="pink"] .input:focus,
+html[data-theme="second"] select.input:focus,
+html[data-theme="second_theme"] select.input:focus,
+html[data-theme="flower"] select.input:focus,
+html[data-theme="pink"] select.input:focus{
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+}
+
+/* Кнопки */
+html[data-theme="second"] .btn--primary,
+html[data-theme="second_theme"] .btn--primary,
+html[data-theme="flower"] .btn--primary,
+html[data-theme="pink"] .btn--primary{
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  color: white !important;
+}
+
+html[data-theme="second"] .btn--ghost,
+html[data-theme="second_theme"] .btn--ghost,
+html[data-theme="flower"] .btn--ghost,
+html[data-theme="pink"] .btn--ghost{
+  background: var(--btn-ghost-bg) !important;
+  border-color: var(--btn-ghost-border) !important;
+  color: rgba(31,41,55,.84) !important;
+}
+
+html[data-theme="second"] .btn,
+html[data-theme="second_theme"] .btn,
+html[data-theme="flower"] .btn,
+html[data-theme="pink"] .btn{
+  border-color: rgba(236,72,153,.25) !important;
+}
+
+/* Карточки */
+html[data-theme="second"] .stat-card,
+html[data-theme="second_theme"] .stat-card,
+html[data-theme="flower"] .stat-card,
+html[data-theme="pink"] .stat-card,
+html[data-theme="second"] .idea-card,
+html[data-theme="second_theme"] .idea-card,
+html[data-theme="flower"] .idea-card,
+html[data-theme="pink"] .idea-card,
+html[data-theme="second"] .template-card,
+html[data-theme="second_theme"] .template-card,
+html[data-theme="flower"] .template-card,
+html[data-theme="pink"] .template-card,
+html[data-theme="second"] .calendar-shell,
+html[data-theme="second_theme"] .calendar-shell,
+html[data-theme="flower"] .calendar-shell,
+html[data-theme="pink"] .calendar-shell{
+  background: var(--card-bg) !important;
+  border-color: rgba(236,72,153,.22) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+/* Идеи */
+html[data-theme="second"] .idea-tag,
+html[data-theme="second_theme"] .idea-tag,
+html[data-theme="flower"] .idea-tag,
+html[data-theme="pink"] .idea-tag{
+  background: rgba(244,114,182,.12) !important;
+}
+
+html[data-theme="second"] .idea-direction,
+html[data-theme="second_theme"] .idea-direction,
+html[data-theme="flower"] .idea-direction,
+html[data-theme="pink"] .idea-direction{
+  background: rgba(249,168,212,.18) !important;
+  color: rgba(236,72,153,.95) !important;
+}
+
+html[data-theme="second"] .idea-btn-generate,
+html[data-theme="second_theme"] .idea-btn-generate,
+html[data-theme="flower"] .idea-btn-generate,
+html[data-theme="pink"] .idea-btn-generate{
+  background: linear-gradient(135deg, rgba(236,72,153,.95), rgba(249,168,212,.98)) !important;
+}
+
+/* Календарь */
+html[data-theme="second"] .calendar-day,
+html[data-theme="second_theme"] .calendar-day,
+html[data-theme="flower"] .calendar-day,
+html[data-theme="pink"] .calendar-day{
+  background: rgba(255,255,255,.80) !important;
+  border-color: rgba(236,72,153,.18) !important;
+}
+
+html[data-theme="second"] .calendar-day.today,
+html[data-theme="second_theme"] .calendar-day.today,
+html[data-theme="flower"] .calendar-day.today,
+html[data-theme="pink"] .calendar-day.today{
+  border-color: rgba(236,72,153,.65) !important;
+  background: rgba(255, 235, 248, .75) !important;
+}
+
+html[data-theme="second"] .calendar-day-number,
+html[data-theme="second_theme"] .calendar-day-number,
+html[data-theme="flower"] .calendar-day-number,
+html[data-theme="pink"] .calendar-day-number{
+  color: rgba(31,41,55,.55) !important;
+}
+
+html[data-theme="second"] .calendar-item,
+html[data-theme="second_theme"] .calendar-item,
+html[data-theme="flower"] .calendar-item,
+html[data-theme="pink"] .calendar-item{
+  background: rgba(255,255,255,.68) !important;
+  border-left-color: rgba(236,72,153,.45) !important;
+}
+
+html[data-theme="second"] .calendar-item.empty-slot,
+html[data-theme="second_theme"] .calendar-item.empty-slot,
+html[data-theme="flower"] .calendar-item.empty-slot,
+html[data-theme="pink"] .calendar-item.empty-slot{
+  border-color: rgba(236,72,153,.35) !important;
+}
+
+html[data-theme="second"] .calendar-nav-btn,
+html[data-theme="second_theme"] .calendar-nav-btn,
+html[data-theme="flower"] .calendar-nav-btn,
+html[data-theme="pink"] .calendar-nav-btn{
+  background: rgba(255,255,255,.85) !important;
+  border-color: rgba(236,72,153,.22) !important;
+}
+
+html[data-theme="second"] .calendar-today-btn,
+html[data-theme="second_theme"] .calendar-today-btn,
+html[data-theme="flower"] .calendar-today-btn,
+html[data-theme="pink"] .calendar-today-btn{
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+}
+
+/* Диалоги */
+html[data-theme="second"] .custom-dialog,
+html[data-theme="second_theme"] .custom-dialog,
+html[data-theme="flower"] .custom-dialog,
+html[data-theme="pink"] .custom-dialog{
+  color: var(--text);
+}
+
+html[data-theme="second"] .dialog-title,
+html[data-theme="second_theme"] .dialog-title,
+html[data-theme="flower"] .dialog-title,
+html[data-theme="pink"] .dialog-title{
+  color: var(--text) !important;
+}
+
+html[data-theme="second"] .dialog-input,
+html[data-theme="second_theme"] .dialog-input,
+html[data-theme="flower"] .dialog-input,
+html[data-theme="pink"] .dialog-input{
+  background: rgba(255,255,255,.85) !important;
+  border-color: rgba(236,72,153,.25) !important;
+}
+
+html[data-theme="second"] .dialog-btn-primary,
+html[data-theme="second_theme"] .dialog-btn-primary,
+html[data-theme="flower"] .dialog-btn-primary,
+html[data-theme="pink"] .dialog-btn-primary{
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+}
+
+/* Модал */
+html[data-theme="second"] .modal-content,
+html[data-theme="second_theme"] .modal-content,
+html[data-theme="flower"] .modal-content,
+html[data-theme="pink"] .modal-content{
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(236,72,153,.18);
+}
+
+html[data-theme="second"] .modal-header,
+html[data-theme="second_theme"] .modal-header,
+html[data-theme="flower"] .modal-header,
+html[data-theme="pink"] .modal-header{
+  border-bottom-color: rgba(236,72,153,.22) !important;
+}
+
