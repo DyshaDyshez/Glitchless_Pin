@@ -199,13 +199,12 @@ async function loadAllTemplatesFromFirebase() {
         return [];
     }
     try {
-        const q = window.firebaseQuery(window.firebaseCollection(window.db, 'templates'));
-        const querySnapshot = await window.firebaseGetDocs(q);
+        const templatesCollection = window.firebaseCollection(window.db, 'templates');
+        const querySnapshot = await window.firebaseGetDocs(templatesCollection);
         const templates = [];
         querySnapshot.forEach((doc) => {
             templates.push({ id: doc.id, ...doc.data() });
         });
-        console.log(`✅ Загружено ${templates.length} шаблонов из Firebase`);
         return templates;
     } catch (error) {
         console.error('❌ Ошибка загрузки шаблонов:', error);
@@ -301,19 +300,18 @@ ${details ? `Дополнительно: ${details}` : ''}
         const data = await response.json();
         let post = data.choices[0].message.content;
         
-        // 🧹 ОЧИСТКА ОТ ВСЯКОГО ФОРМАТИРОВАНИЯ
         post = post
-            .replace(/```\w*\n?/g, '')        // Убираем markdown-блоки
-            .replace(/```/g, '')              // Убираем закрывающие ```
-            .replace(/\*\*\*/g, '')           // Убираем ***
-            .replace(/---/g, '')              // Убираем ---
-            .replace(/___/g, '')              // Убираем ___
-            .replace(/\*\*/g, '')             // Убираем **жирный**
-            .replace(/__/g, '')               // Убираем __жирный__
-            .replace(/\*(?!\s)/g, '')         // Убираем *курсив* (но не маркеры списков)
-            .replace(/_(?!\s)/g, '')          // Убираем _курсив_
-            .replace(/#{1,6}\s/g, '')         // Убираем # заголовки
-            .replace(/\n{3,}/g, '\n\n')       // Максимум 2 переноса подряд
+            .replace(/```\w*\n?/g, '')
+            .replace(/```/g, '')
+            .replace(/\*\*\*/g, '')
+            .replace(/---/g, '')
+            .replace(/___/g, '')
+            .replace(/\*\*/g, '')
+            .replace(/__/g, '')
+            .replace(/\*(?!\s)/g, '')
+            .replace(/_(?!\s)/g, '')
+            .replace(/#{1,6}\s/g, '')
+            .replace(/\n{3,}/g, '\n\n')
             .trim();
         
         return post;
@@ -476,7 +474,6 @@ async function updateLikeButton() {
         return;
     }
     
-    // Проверяем, есть ли этот пост в шаблонах (локально и в облаке)
     const isLikedLocally = appState.templates?.some(t => t.ideaId === currentIdeaId);
     
     if (isLikedLocally) {
@@ -503,7 +500,6 @@ async function likeCurrentPost() {
         return; 
     }
     
-    // Проверяем, не лайкнут ли уже
     if (appState.templates?.some(t => t.ideaId === currentIdeaId)) {
         showNotification('⭐ Пост уже в шаблонах', 'info');
         return;
@@ -519,16 +515,13 @@ async function likeCurrentPost() {
         likedAt: new Date().toISOString()
     };
     
-    // Сохраняем в Firebase
     const saved = await saveTemplateToFirebase(newTemplate);
     
     if (saved) {
-        // Добавляем в локальное состояние
         if (!appState.templates) appState.templates = [];
         appState.templates.push(newTemplate);
         saveState();
         
-        // Обновляем UI
         updateLikeButton();
         renderTemplates();
         updateStats();
@@ -545,10 +538,8 @@ function renderTemplates() {
     const badge = document.getElementById('templates-badge');
     if (!container) return;
     
-    // Получаем все шаблоны
     let templates = [...(appState.templates || [])];
     
-    // Применяем фильтры
     if (templateFilters.platform !== 'all') {
         templates = templates.filter(t => t.tagKey === templateFilters.platform);
     }
@@ -563,12 +554,10 @@ function renderTemplates() {
         );
     }
     
-    // Сортируем по дате лайка (новые сверху)
     templates.sort((a, b) => new Date(b.likedAt) - new Date(a.likedAt));
     
     if (badge) badge.textContent = appState.templates.length;
     
-    // Создаём фильтры, если их ещё нет
     const filtersContainer = document.getElementById('templates-filters');
     if (filtersContainer && !filtersContainer.querySelector('.filter-bar')) {
         filtersContainer.innerHTML = `
@@ -599,16 +588,15 @@ function renderTemplates() {
             </div>
         `;
         
-        // Добавляем обработчики фильтров
-        document.getElementById('filter-platform').addEventListener('change', (e) => {
+        document.getElementById('filter-platform')?.addEventListener('change', (e) => {
             templateFilters.platform = e.target.value;
             renderTemplates();
         });
-        document.getElementById('filter-direction').addEventListener('change', (e) => {
+        document.getElementById('filter-direction')?.addEventListener('change', (e) => {
             templateFilters.direction = e.target.value;
             renderTemplates();
         });
-        document.getElementById('filter-search').addEventListener('input', (e) => {
+        document.getElementById('filter-search')?.addEventListener('input', (e) => {
             templateFilters.search = e.target.value;
             renderTemplates();
         });
@@ -644,7 +632,6 @@ function renderTemplates() {
         </div>
     `).join('');
     
-    // Обработчики удаления
     container.querySelectorAll('.template-delete').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();
@@ -662,7 +649,6 @@ function renderTemplates() {
         });
     });
     
-    // Обработчики использования
     container.querySelectorAll('.template-use').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.getAttribute('data-id');
@@ -792,6 +778,23 @@ function attachCalendarEvents() {
                 } 
             } 
         });
+    });
+}
+
+function openPostModal(calItem) {
+    const idea = appState.ideas?.find(i => i.id === calItem.ideaId);
+    const html = `<div class="custom-modal post-modal">
+        <div class="modal-header"><div class="modal-title">📝 ${escapeHtml(idea?.topic || 'Пост')}</div><button class="modal-close" data-close-modal>✕</button></div>
+        <div class="modal-body"><div class="post-modal-text">${escapeHtml(idea?.postText || 'Текст не найден').replace(/\n/g, '<br>')}</div></div>
+        <div class="modal-footer"><button class="btn btn--secondary" data-close-modal>Закрыть</button><button class="btn btn--primary" data-mark-published="${calItem.id}">${calItem.published ? '✅ Опубликовано' : '📢 Отметить опубликованным'}</button></div>
+    </div>`;
+    openModal(html);
+    document.querySelector('[data-mark-published]')?.addEventListener('click', () => {
+        calItem.published = !calItem.published;
+        saveState();
+        renderCalendar();
+        closeModal();
+        showNotification(calItem.published ? '📢 Пост отмечен опубликованным!' : '📝 Статус сброшен', 'success');
     });
 }
 
@@ -1020,84 +1023,7 @@ function openAutoGenerateModal() {
     openModal(html);
 }
 
-// ============ ИНИЦИАЛИЗАЦИЯ ============
-async function init() {
-    appState = loadState();
-    
-    // Загружаем шаблоны из Firebase и объединяем с локальными
-    const cloudTemplates = await loadAllTemplatesFromFirebase();
-    
-    // Объединяем локальные и облачные шаблоны (без дубликатов)
-    const localIds = new Set(appState.templates.map(t => t.id));
-    cloudTemplates.forEach(t => {
-        if (!localIds.has(t.id)) {
-            appState.templates.push(t);
-        }
-    });
-    
-    // Сохраняем объединённое состояние
-    saveState();
-    
-    // Привязываем глобальные функции
-    window.generateAutoIdeas = generateAutoIdeas;
-    window.closeModal = closeModal;
-    
-    // Навигация
-    document.querySelectorAll('.navlink[data-page]').forEach(btn => 
-        btn.addEventListener('click', () => setActivePage(btn.getAttribute('data-page')))
-    );
-    
-    // Кнопки
-    document.getElementById('btn-generate-auto')?.addEventListener('click', openAutoGenerateModal);
-    document.getElementById('btn-generate-idea')?.addEventListener('click', () => {
-        const topic = document.getElementById('idea-topic')?.value.trim();
-        if (!topic) { showNotification('❌ Введите тему поста', 'warning'); return; }
-        const newIdea = addIdea({ 
-            topic, 
-            tagKey: document.getElementById('idea-tag')?.value, 
-            text: document.getElementById('idea-text')?.value.trim() || '', 
-            direction: document.getElementById('direction-select')?.value 
-        });
-        generatePostForIdea(newIdea.id, true);
-    });
-    document.getElementById('btn-save-idea')?.addEventListener('click', saveCurrentIdea);
-    document.getElementById('btn-add-idea')?.addEventListener('click', addEmptyIdea);
-    document.getElementById('btn-add-to-calendar')?.addEventListener('click', addToCalendar);
-    document.getElementById('btn-copy-post')?.addEventListener('click', copyPost);
-    document.getElementById('btn-edit-post')?.addEventListener('click', editPost);
-    document.getElementById('btn-like-post')?.addEventListener('click', likeCurrentPost);
-    document.getElementById('btn-regenerate-post')?.addEventListener('click', regeneratePost);
-    document.getElementById('btn-export-json')?.addEventListener('click', exportToJSON);
-    document.getElementById('btn-generate-excel')?.addEventListener('click', exportToExcel);
-    
-    // Календарь навигация
-    document.getElementById('cal-prev-month')?.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
-    document.getElementById('cal-next-month')?.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
-    document.getElementById('cal-today')?.addEventListener('click', () => { calCursor = new Date(); renderCalendar(); });
-    
-    // Дата по умолчанию
-    if (document.getElementById('plan-date') && !document.getElementById('plan-date').value) 
-        document.getElementById('plan-date').value = formatISODate(new Date());
-    
-    // Auto-resize
-    document.querySelectorAll('.auto-resize').forEach(autoResize);
-    const postOutput = document.getElementById('post-output');
-    if (postOutput) postOutput.addEventListener('input', () => autoResize(postOutput));
-    
-    // Начальный рендер
-    renderIdeas();
-    renderCalendar();
-    renderTemplates();
-    updateStats();
-    updateLikeButton();
-    setActivePage('planner');
-    
-    showNotification('🎉 Glitchless Pin готов! Шаблоны синхронизированы с облаком ☁️', 'success');
-    initThemeSwitcher();
-}
-
-
-// Экспорт
+// ============ ЭКСПОРТ ============
 function exportToJSON() {
     const exportData = { 
         ideas: appState.ideas, 
@@ -1140,35 +1066,26 @@ function exportToExcel() {
     showNotification('📊 Экспорт завершен!', 'success');
 }
 
-// ============ ПЕРЕКЛЮЧЕНИЕ ТЕМ ============
+// ============ ТЕМЫ ============
 function initThemeSwitcher() {
     const sidebarFooter = document.querySelector('.sidebar__footer');
-
     if (!sidebarFooter) return;
     
-    // Создаём переключатель тем
     const switcher = document.createElement('div');
     switcher.className = 'theme-switcher';
     switcher.innerHTML = `
         <button class="theme-btn" data-theme="light" title="Светлая тема">☀️</button>
         <button class="theme-btn" data-theme="dark" title="Тёмная тема">🌙</button>
-
         <button class="theme-btn" data-theme="moon" title="Лунная ночь">🌘</button>
-
-
         <button class="theme-btn" data-theme="green" title="Розовая тема">🌸</button>
-        
         <button class="theme-btn" data-theme="comfort" title="Комфортная тема">🌿</button>
     `;
     
-    // Вставляем перед кнопками экспорта
     sidebarFooter.insertBefore(switcher, sidebarFooter.firstChild);
     
-    // Загружаем сохранённую тему
     const savedTheme = localStorage.getItem('glitchless-theme') || 'light';
     applyTheme(savedTheme);
     
-    // Обработчики кликов
     switcher.querySelectorAll('.theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
@@ -1181,29 +1098,133 @@ function initThemeSwitcher() {
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     
-    // Обновляем активную кнопку
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
     });
     
-    // Обновляем фон body
     const gradients = {
         light: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         dark: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)',
         pink: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
         second: 'linear-gradient(135deg, #fff7fb 0%, #ffe4f3 45%, #ffd1ea 100%)',
         moon: 'linear-gradient(135deg, #050815 0%, #0b1230 45%, #0f1b44 100%)',
-
         green: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)'
     };
     document.body.style.background = gradients[theme] || gradients.light;
 }
 
-// Добавь вызов initThemeSwitcher() в функцию init():
-// Внутри init(), после showNotification в самом конце:
-// initThemeSwitcher();
+// ============ ИНИЦИАЛИЗАЦИЯ ============
+async function init() {
+    appState = loadState();
+    
+    // Ждём Firebase с повторными попытками
+    let retries = 0;
+    while (!window.db && retries < 10) {
+        await new Promise(r => setTimeout(r, 500));
+        retries++;
+        console.log(`⏳ Ожидание Firebase... попытка ${retries}`);
+    }
+    console.log('🔄 Инициализация приложения...');
+    console.log('📦 Локальные шаблоны до синхронизации:', appState.templates.length);
+    
+    // ====== ГЛАВНОЕ ИСПРАВЛЕНИЕ: ЗАГРУЗКА ШАБЛОНОВ ИЗ FIREBASE ======
+    // Ждём, пока Firebase полностью инициализируется
+    if (window.db) {
+        try {
+            console.log('☁️ Загружаем шаблоны из Firebase...');
+            const templatesCollection = window.firebaseCollection(window.db, 'templates');
+            const querySnapshot = await window.firebaseGetDocs(templatesCollection);
+            
+            const cloudTemplates = [];
+            querySnapshot.forEach((doc) => {
+                cloudTemplates.push({ id: doc.id, ...doc.data() });
+            });
+            
+            console.log(`☁️ Найдено ${cloudTemplates.length} шаблонов в облаке`);
+            
+            // Объединяем с локальными (без дубликатов)
+            const existingIds = new Set(appState.templates.map(t => t.id));
+            cloudTemplates.forEach(template => {
+                if (!existingIds.has(template.id)) {
+                    appState.templates.push(template);
+                    console.log(`➕ Добавлен шаблон из облака: ${template.topic}`);
+                }
+            });
+            
+            console.log(`📊 Итоговое количество шаблонов: ${appState.templates.length}`);
+            
+            // Сохраняем синхронизированное состояние
+            saveState();
+            
+        } catch (error) {
+            console.error('❌ Ошибка загрузки шаблонов из Firebase:', error);
+        }
+    } else {
+        console.warn('⚠️ Firebase не инициализирован, шаблоны из облака не загружены');
+    }
+    // ====== КОНЕЦ ИСПРАВЛЕНИЯ ======
+    
+    // Привязываем глобальные функции
+    window.generateAutoIdeas = generateAutoIdeas;
+    window.closeModal = closeModal;
+    
+    // Навигация
+    document.querySelectorAll('.navlink[data-page]').forEach(btn => 
+        btn.addEventListener('click', () => setActivePage(btn.getAttribute('data-page')))
+    );
+    
+    // Кнопки
+    document.getElementById('btn-generate-auto')?.addEventListener('click', openAutoGenerateModal);
+    document.getElementById('btn-generate-idea')?.addEventListener('click', () => {
+        const topic = document.getElementById('idea-topic')?.value.trim();
+        if (!topic) { showNotification('❌ Введите тему поста', 'warning'); return; }
+        const newIdea = addIdea({ 
+            topic, 
+            tagKey: document.getElementById('idea-tag')?.value, 
+            text: document.getElementById('idea-text')?.value.trim() || '', 
+            direction: document.getElementById('direction-select')?.value 
+        });
+        generatePostForIdea(newIdea.id, true);
+    });
+    document.getElementById('btn-save-idea')?.addEventListener('click', saveCurrentIdea);
+    document.getElementById('btn-add-idea')?.addEventListener('click', addEmptyIdea);
+    document.getElementById('btn-add-to-calendar')?.addEventListener('click', addToCalendar);
+    document.getElementById('btn-copy-post')?.addEventListener('click', copyPost);
+    document.getElementById('btn-edit-post')?.addEventListener('click', editPost);
+    document.getElementById('btn-like-post')?.addEventListener('click', likeCurrentPost);
+    document.getElementById('btn-regenerate-post')?.addEventListener('click', regeneratePost);
+    document.getElementById('btn-export-json')?.addEventListener('click', exportToJSON);
+    document.getElementById('btn-generate-excel')?.addEventListener('click', exportToExcel);
+    
+    // Календарь навигация - проверяем наличие элементов перед добавлением обработчиков
+    const prevBtn = document.getElementById('cal-prev-month');
+    const nextBtn = document.getElementById('cal-next-month');
+    const todayBtn = document.getElementById('cal-today');
+    
+    if (prevBtn) prevBtn.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
+    if (todayBtn) todayBtn.addEventListener('click', () => { calCursor = new Date(); renderCalendar(); });
+    
+    // Дата по умолчанию
+    if (document.getElementById('plan-date') && !document.getElementById('plan-date').value) 
+        document.getElementById('plan-date').value = formatISODate(new Date());
+    
+    // Auto-resize
+    document.querySelectorAll('.auto-resize').forEach(autoResize);
+    const postOutput = document.getElementById('post-output');
+    if (postOutput) postOutput.addEventListener('input', () => autoResize(postOutput));
+    
+    // Начальный рендер
+    renderIdeas();
+    renderCalendar();
+    renderTemplates();
+    updateStats();
+    updateLikeButton();
+    setActivePage('planner');
+    
+    showNotification('🎉 Glitchless Pin готов! Шаблоны синхронизированы с облаком ☁️', 'success');
+    initThemeSwitcher();
+}
 
-
-// Запуск
 document.addEventListener('DOMContentLoaded', init);
 window.closeModal = closeModal;
