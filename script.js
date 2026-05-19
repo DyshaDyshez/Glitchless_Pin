@@ -3,12 +3,15 @@ const CONFIG = {
     LS_KEY: 'glitchless-pin-v3',
 };
 
-window.closeModal = closeModal;
-
 // ============ ГЛОБАЛЬНОЕ СОСТОЯНИЕ ============
 let appState = { ideas: [], calendar: [], templates: [], version: 3 };
 let currentIdeaId = null;
 let isEditing = false;
+let templateFilters = {
+    platform: 'all',
+    direction: 'all',
+    search: ''
+};
 
 // ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
 function uid() {
@@ -30,7 +33,7 @@ function autoResize(textarea) {
     textarea.style.height = Math.min(textarea.scrollHeight, 400) + 'px';
 }
 
-// ============ КАСТОМНЫЕ УВЕДОМЛЕНИЯ ============
+// ============ УВЕДОМЛЕНИЯ ============
 function showNotification(message, type = 'success') {
     const container = document.getElementById('notification-container');
     if (!container) return;
@@ -60,24 +63,19 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-// ============ МОДАЛЬНЫЕ ДИАЛОГИ ============
-function openModal(html, isDialog = false) {
+// ============ МОДАЛЬНЫЕ ОКНА ============
+function openModal(html) {
     const modalRoot = document.getElementById('modal-root');
     const modalBackdrop = document.getElementById('modal-backdrop');
     const modalContent = document.getElementById('modal-content');
     modalContent.innerHTML = html;
     modalRoot.classList.remove('hidden');
-    if (isDialog) modalContent.classList.add('dialog-modal');
     setTimeout(() => modalBackdrop.classList.add('show'), 10);
-    
-    // Закрытие по клику на backdrop
     modalBackdrop.onclick = (e) => {
         if (e.target === modalBackdrop) closeModal();
     };
-    
     const firstInput = modalContent.querySelector('input, textarea, select');
     if (firstInput) setTimeout(() => firstInput.focus(), 100);
-    
 }
 
 function closeModal() {
@@ -88,9 +86,9 @@ function closeModal() {
     setTimeout(() => {
         modalRoot.classList.add('hidden');
         modalContent.innerHTML = '';
-        modalContent.classList.remove('dialog-modal');
     }, 200);
 }
+
 function customConfirm(message, title = 'Подтверждение') {
     return new Promise((resolve) => {
         const html = `
@@ -104,19 +102,14 @@ function customConfirm(message, title = 'Подтверждение') {
                 </div>
             </div>
         `;
-        
-        // Открываем модалку
         const modalRoot = document.getElementById('modal-root');
         const modalBackdrop = document.getElementById('modal-backdrop');
         const modalContent = document.getElementById('modal-content');
         modalContent.innerHTML = html;
         modalRoot.classList.remove('hidden');
         setTimeout(() => modalBackdrop.classList.add('show'), 10);
-        
-        // Обработчики кнопок
         const yesBtn = modalContent.querySelector('[data-confirm-yes]');
         const noBtn = modalContent.querySelector('[data-confirm-no]');
-        
         const cleanup = () => {
             modalBackdrop.classList.remove('show');
             setTimeout(() => {
@@ -124,26 +117,14 @@ function customConfirm(message, title = 'Подтверждение') {
                 modalContent.innerHTML = '';
             }, 200);
         };
-        
-        yesBtn.onclick = () => {
-            cleanup();
-            resolve(true);
-        };
-        
-        noBtn.onclick = () => {
-            cleanup();
-            resolve(false);
-        };
-        
-        // Закрытие по клику на фон
+        yesBtn.onclick = () => { cleanup(); resolve(true); };
+        noBtn.onclick = () => { cleanup(); resolve(false); };
         modalBackdrop.onclick = (e) => {
-            if (e.target === modalBackdrop) {
-                cleanup();
-                resolve(false);
-            }
+            if (e.target === modalBackdrop) { cleanup(); resolve(false); }
         };
     });
 }
+
 function customPrompt(message, defaultValue = '', title = 'Введите значение') {
     return new Promise((resolve) => {
         const html = `
@@ -152,7 +133,7 @@ function customPrompt(message, defaultValue = '', title = 'Введите зна
                 <div class="dialog-title">${escapeHtml(title)}</div>
                 <div class="dialog-message">${escapeHtml(message)}</div>
                 <div class="dialog-input-wrapper">
-                    <input type="text" id="prompt-input" class="dialog-input" value="${escapeHtml(defaultValue)}" placeholder="Введите текст..." autofocus />
+                    <input type="text" id="prompt-input" class="dialog-input" value="${escapeHtml(defaultValue)}" placeholder="Введите текст..." />
                 </div>
                 <div class="dialog-actions">
                     <button class="dialog-btn dialog-btn-secondary" data-prompt-cancel>Отмена</button>
@@ -160,18 +141,15 @@ function customPrompt(message, defaultValue = '', title = 'Введите зна
                 </div>
             </div>
         `;
-        
         const modalRoot = document.getElementById('modal-root');
         const modalBackdrop = document.getElementById('modal-backdrop');
         const modalContent = document.getElementById('modal-content');
         modalContent.innerHTML = html;
         modalRoot.classList.remove('hidden');
         setTimeout(() => modalBackdrop.classList.add('show'), 10);
-        
         const input = modalContent.querySelector('#prompt-input');
         const okBtn = modalContent.querySelector('[data-prompt-ok]');
         const cancelBtn = modalContent.querySelector('[data-prompt-cancel]');
-        
         const cleanup = () => {
             modalBackdrop.classList.remove('show');
             setTimeout(() => {
@@ -179,32 +157,16 @@ function customPrompt(message, defaultValue = '', title = 'Введите зна
                 modalContent.innerHTML = '';
             }, 200);
         };
-        
-        okBtn.onclick = () => {
-            const value = input?.value || '';
-            cleanup();
-            resolve(value);
-        };
-        
-        cancelBtn.onclick = () => {
-            cleanup();
-            resolve(null);
-        };
-        
+        okBtn.onclick = () => { const value = input?.value || ''; cleanup(); resolve(value); };
+        cancelBtn.onclick = () => { cleanup(); resolve(null); };
         modalBackdrop.onclick = (e) => {
-            if (e.target === modalBackdrop) {
-                cleanup();
-                resolve(null);
-            }
+            if (e.target === modalBackdrop) { cleanup(); resolve(null); }
         };
-        
         setTimeout(() => input?.focus(), 100);
     });
 }
-window._dialogResolve = null;
-window.closeModal = closeModal;
 
-// ============ СОХРАНЕНИЕ/ЗАГРУЗКА ============
+// ============ СОХРАНЕНИЕ/ЗАГРУЗКА ЛОКАЛЬНОГО СОСТОЯНИЯ ============
 function loadState() {
     const raw = localStorage.getItem(CONFIG.LS_KEY);
     if (!raw) return { ideas: [], calendar: [], templates: [], version: 3 };
@@ -213,8 +175,11 @@ function loadState() {
         if (!parsed.templates) parsed.templates = [];
         if (!parsed.calendar) parsed.calendar = [];
         return parsed;
-    } catch { return { ideas: [], calendar: [], templates: [], version: 3 }; }
+    } catch { 
+        return { ideas: [], calendar: [], templates: [], version: 3 }; 
+    }
 }
+
 function saveState() {
     localStorage.setItem(CONFIG.LS_KEY, JSON.stringify({
         ideas: appState.ideas,
@@ -225,64 +190,72 @@ function saveState() {
     updateStats();
     renderIdeas();
     renderCalendar();
-    renderTemplates();
 }
 
-// ============ FIREBASE ФУНКЦИИ ДЛЯ ШАБЛОНОВ ============
-async function loadTemplatesFromFirebase() {
+// ============ FIREBASE ДЛЯ ШАБЛОНОВ ============
+async function loadAllTemplatesFromFirebase() {
     if (!window.db) {
-        console.warn('Firebase не инициализирован');
-        return;
+        console.warn('⚠️ Firebase не инициализирован');
+        return [];
     }
     try {
-        const q = window.firebaseQuery(collection(window.db, 'templates'));
+        const q = window.firebaseQuery(window.firebaseCollection(window.db, 'templates'));
         const querySnapshot = await window.firebaseGetDocs(q);
         const templates = [];
         querySnapshot.forEach((doc) => {
             templates.push({ id: doc.id, ...doc.data() });
         });
-        appState.templates = templates;
-        renderTemplates();
-        updateStats();
         console.log(`✅ Загружено ${templates.length} шаблонов из Firebase`);
+        return templates;
     } catch (error) {
-        console.error('Ошибка загрузки шаблонов из Firebase:', error);
+        console.error('❌ Ошибка загрузки шаблонов:', error);
+        return [];
     }
 }
 
 async function saveTemplateToFirebase(template) {
-    if (!window.db) return false;
+    if (!window.db) {
+        console.warn('⚠️ Firebase не инициализирован, сохраняем локально');
+        return true;
+    }
     try {
-        await window.firebaseSetDoc(doc(window.db, 'templates', template.id), {
+        await window.firebaseSetDoc(window.firebaseDoc(window.db, 'templates', template.id), {
             ideaId: template.ideaId,
             postText: template.postText,
             topic: template.topic,
             direction: template.direction,
             tagKey: template.tagKey,
-            likedAt: template.likedAt
+            likedAt: template.likedAt || new Date().toISOString()
         });
         console.log(`✅ Шаблон ${template.id} сохранён в Firebase`);
         return true;
     } catch (error) {
-        console.error('Ошибка сохранения шаблона в Firebase:', error);
+        console.error('❌ Ошибка сохранения шаблона:', error);
         return false;
     }
 }
 
 async function deleteTemplateFromFirebase(templateId) {
-    if (!window.db) return false;
+    if (!window.db) {
+        console.warn('⚠️ Firebase не инициализирован');
+        return true;
+    }
     try {
-        await window.firebaseDeleteDoc(doc(window.db, 'templates', templateId));
+        await window.firebaseDeleteDoc(window.firebaseDoc(window.db, 'templates', templateId));
         console.log(`✅ Шаблон ${templateId} удалён из Firebase`);
         return true;
     } catch (error) {
-        console.error('Ошибка удаления шаблона из Firebase:', error);
+        console.error('❌ Ошибка удаления шаблона:', error);
         return false;
     }
 }
 
 // ============ AI ГЕНЕРАЦИЯ ============
 async function generateAIPost(topic, direction, platform, details = '') {
+    const API_KEY = window.OPENROUTER_API_KEY;
+    if (!API_KEY) {
+        throw new Error('API ключ не загружен. Проверьте Firestore (config/api)');
+    }
     const systemPrompt = `Ты профессиональный копирайтер. Напиши ГОТОВЫЙ ПОСТ для публикации.
 Тема: "${topic}"
 Платформа: ${platform}
@@ -294,13 +267,6 @@ ${details ? `Дополнительно: ${details}` : ''}
 3. Разбей на короткие абзацы
 4. Добавь призыв к действию
 5. В конце добавь 3-5 хэштегов`;
-
-    // Берём API ключ из глобальной переменной (загруженной из Firestore)
-    const API_KEY = window.OPENROUTER_API_KEY;
-    
-    if (!API_KEY) {
-        throw new Error('API ключ не загружен. Проверь Firestore (коллекция config, документ api)');
-    }
 
     try {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -321,12 +287,10 @@ ${details ? `Дополнительно: ${details}` : ''}
                 max_tokens: 1500
             })
         });
-
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error?.message || `HTTP ${response.status}`);
         }
-        
         const data = await response.json();
         let post = data.choices[0].message.content;
         post = post.replace(/```\w*\n?/g, '').replace(/```/g, '').trim();
@@ -356,17 +320,11 @@ async function generatePostForIdea(ideaId, showInEditor = true) {
         saveState();
         if (showInEditor) {
             currentIdeaId = ideaId;
-            const postOutput = document.getElementById('post-output');
-            postOutput.value = post;
-            autoResize(postOutput);
+            document.getElementById('post-output').value = post;
+            autoResize(document.getElementById('post-output'));
             document.getElementById('plan-date').value = idea.calendarDate || formatISODate(new Date());
             document.getElementById('plan-notes').value = idea.notes || '';
-            const likeBtn = document.getElementById('btn-like-post');
-            const isLiked = appState.templates?.some(t => t.ideaId === ideaId);
-            likeBtn.innerHTML = isLiked ? '<i class="fa-solid fa-heart"></i> В шаблонах ✅' : '<i class="fa-regular fa-heart"></i> Сохранить в шаблоны';
-            likeBtn.disabled = isLiked;
-            if (isLiked) likeBtn.classList.add('opacity-50');
-            else likeBtn.classList.remove('opacity-50');
+            updateLikeButton();
         }
         if (btn) {
             btn.innerHTML = '✅ Готово!';
@@ -385,22 +343,37 @@ async function generatePostForIdea(ideaId, showInEditor = true) {
 
 // ============ CRUD ИДЕИ ============
 function addIdea({ topic, tagKey, text, direction }) {
-    const newIdea = { id: uid(), topic: topic.trim(), tagKey, details: text.trim(), direction, createdAt: Date.now(), postText: '', calendarDate: '', notes: '' };
+    const newIdea = { 
+        id: uid(), 
+        topic: topic.trim(), 
+        tagKey, 
+        details: text.trim(), 
+        direction, 
+        createdAt: Date.now(), 
+        postText: '', 
+        calendarDate: '', 
+        notes: '' 
+    };
     appState.ideas.unshift(newIdea);
     saveState();
     return newIdea;
 }
+
 async function deleteIdea(id) {
     const confirmed = await customConfirm('🗑️ Удалить эту идею? Это действие нельзя отменить.', 'Удаление идеи');
     if (!confirmed) return;
     appState.ideas = appState.ideas.filter(i => i.id !== id);
     appState.calendar = appState.calendar.filter(c => c.ideaId !== id);
     saveState();
-    if (currentIdeaId === id) { currentIdeaId = null; document.getElementById('post-output').value = ''; document.getElementById('post-output').placeholder = '✨ Здесь появится готовый пост после генерации...'; }
+    if (currentIdeaId === id) { 
+        currentIdeaId = null; 
+        document.getElementById('post-output').value = ''; 
+        document.getElementById('post-output').placeholder = '✨ Здесь появится готовый пост после генерации...'; 
+    }
     showNotification('✅ Идея удалена', 'info');
 }
 
-// ============ РЕНДЕР СПИСКА ИДЕЙ ============
+// ============ РЕНДЕР ИДЕЙ ============
 function renderIdeas() {
     const ideas = [...(appState.ideas || [])].sort((a, b) => b.createdAt - a.createdAt);
     const container = document.getElementById('ideas-list');
@@ -417,106 +390,275 @@ function renderIdeas() {
         const hasPost = !!idea.postText;
         return `
             <div class="idea-card" data-idea-id="${idea.id}">
-                <div class="idea-card-header"><div class="idea-badges"><span class="idea-tag">${tagIcons[idea.tagKey] || '📌'} ${idea.tagKey}</span><span class="idea-direction">${dirIcons[idea.direction] || '🎓'} ${idea.direction}</span></div></div>
+                <div class="idea-card-header">
+                    <div class="idea-badges">
+                        <span class="idea-tag">${tagIcons[idea.tagKey] || '📌'} ${idea.tagKey}</span>
+                        <span class="idea-direction">${dirIcons[idea.direction] || '🎓'} ${idea.direction}</span>
+                    </div>
+                </div>
                 <div class="idea-title">${escapeHtml(idea.topic)}</div>
                 ${idea.details ? `<div class="idea-details">${escapeHtml(idea.details.substring(0,80))}${idea.details.length>80?'...':''}</div>` : ''}
                 <div class="idea-actions">
-                    ${!hasPost ? `<button class="idea-btn idea-btn-generate" data-generate-id="${idea.id}">🚀 Сгенерировать</button>` : `<button class="idea-btn idea-btn-view" data-view-id="${idea.id}">👁️ Смотреть пост</button>`}
+                    ${!hasPost 
+                        ? `<button class="idea-btn idea-btn-generate" data-generate-id="${idea.id}">🚀 Сгенерировать</button>` 
+                        : `<button class="idea-btn idea-btn-view" data-view-id="${idea.id}">👁️ Смотреть пост</button>`
+                    }
                     <button class="idea-btn idea-btn-delete" data-delete-id="${idea.id}">🗑️</button>
                 </div>
             </div>
         `;
     }).join('');
-    container.querySelectorAll('.idea-btn-generate').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); generatePostForIdea(btn.getAttribute('data-generate-id'), true); }));
-    container.querySelectorAll('.idea-btn-view').forEach(btn => btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = btn.getAttribute('data-view-id');
-        const idea = appState.ideas.find(i => i.id === id);
-        if (idea && idea.postText) {
-            currentIdeaId = id;
-            const postOutput = document.getElementById('post-output');
-            postOutput.value = idea.postText;
-            autoResize(postOutput);
-            document.getElementById('plan-date').value = idea.calendarDate || formatISODate(new Date());
-            document.getElementById('plan-notes').value = idea.notes || '';
-            const likeBtn = document.getElementById('btn-like-post');
-            const isLiked = appState.templates?.some(t => t.ideaId === id);
-            likeBtn.innerHTML = isLiked ? '<i class="fa-solid fa-heart"></i> В шаблонах ✅' : '<i class="fa-regular fa-heart"></i> Сохранить в шаблоны';
-            likeBtn.disabled = isLiked;
-            if (isLiked) likeBtn.classList.add('opacity-50'); else likeBtn.classList.remove('opacity-50');
-            showNotification('📄 Пост загружен в редактор', 'success');
-        }
-    }));
-    container.querySelectorAll('.idea-btn-delete').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); deleteIdea(btn.getAttribute('data-delete-id')); }));
+    
+    container.querySelectorAll('.idea-btn-generate').forEach(btn => {
+        btn.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            generatePostForIdea(btn.getAttribute('data-generate-id'), true); 
+        });
+    });
+    
+    container.querySelectorAll('.idea-btn-view').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.getAttribute('data-view-id');
+            const idea = appState.ideas.find(i => i.id === id);
+            if (idea && idea.postText) {
+                currentIdeaId = id;
+                document.getElementById('post-output').value = idea.postText;
+                autoResize(document.getElementById('post-output'));
+                document.getElementById('plan-date').value = idea.calendarDate || formatISODate(new Date());
+                document.getElementById('plan-notes').value = idea.notes || '';
+                updateLikeButton();
+                showNotification('📄 Пост загружен в редактор', 'success');
+            }
+        });
+    });
+    
+    container.querySelectorAll('.idea-btn-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            deleteIdea(btn.getAttribute('data-delete-id')); 
+        });
+    });
 }
 
-// ============ ШАБЛОНЫ (С FIREBASE) ============
+// ============ ОБНОВЛЕНИЕ КНОПКИ ЛАЙКА ============
+async function updateLikeButton() {
+    const likeBtn = document.getElementById('btn-like-post');
+    if (!likeBtn) return;
+    
+    if (!currentIdeaId) {
+        likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> Сохранить в шаблоны';
+        likeBtn.disabled = false;
+        likeBtn.classList.remove('opacity-50');
+        return;
+    }
+    
+    // Проверяем, есть ли этот пост в шаблонах (локально и в облаке)
+    const isLikedLocally = appState.templates?.some(t => t.ideaId === currentIdeaId);
+    
+    if (isLikedLocally) {
+        likeBtn.innerHTML = '<i class="fa-solid fa-heart"></i> В шаблонах ✅';
+        likeBtn.disabled = true;
+        likeBtn.classList.add('opacity-50');
+    } else {
+        likeBtn.innerHTML = '<i class="fa-regular fa-heart"></i> Сохранить в шаблоны';
+        likeBtn.disabled = false;
+        likeBtn.classList.remove('opacity-50');
+    }
+}
+
+// ============ ЛАЙК ПОСТА (СОХРАНЕНИЕ В ШАБЛОНЫ) ============
+async function likeCurrentPost() {
+    if (!currentIdeaId) { 
+        showNotification('❌ Нет активного поста', 'warning'); 
+        return; 
+    }
+    
+    const idea = appState.ideas.find(i => i.id === currentIdeaId);
+    if (!idea || !idea.postText) { 
+        showNotification('❌ Сначала сгенерируйте пост', 'warning'); 
+        return; 
+    }
+    
+    // Проверяем, не лайкнут ли уже
+    if (appState.templates?.some(t => t.ideaId === currentIdeaId)) {
+        showNotification('⭐ Пост уже в шаблонах', 'info');
+        return;
+    }
+    
+    const newTemplate = {
+        id: uid(),
+        ideaId: currentIdeaId,
+        postText: idea.postText,
+        topic: idea.topic,
+        direction: idea.direction,
+        tagKey: idea.tagKey,
+        likedAt: new Date().toISOString()
+    };
+    
+    // Сохраняем в Firebase
+    const saved = await saveTemplateToFirebase(newTemplate);
+    
+    if (saved) {
+        // Добавляем в локальное состояние
+        if (!appState.templates) appState.templates = [];
+        appState.templates.push(newTemplate);
+        saveState();
+        
+        // Обновляем UI
+        updateLikeButton();
+        renderTemplates();
+        updateStats();
+        
+        showNotification('❤️ Пост сохранён в облачные шаблоны!', 'success');
+    } else {
+        showNotification('❌ Ошибка сохранения в облако', 'error');
+    }
+}
+
+// ============ РЕНДЕР ШАБЛОНОВ С ФИЛЬТРАМИ ============
 function renderTemplates() {
     const container = document.getElementById('templates-list');
     const badge = document.getElementById('templates-badge');
-    const templates = appState.templates || [];
-    if (badge) badge.textContent = templates.length;
     if (!container) return;
+    
+    // Получаем все шаблоны
+    let templates = [...(appState.templates || [])];
+    
+    // Применяем фильтры
+    if (templateFilters.platform !== 'all') {
+        templates = templates.filter(t => t.tagKey === templateFilters.platform);
+    }
+    if (templateFilters.direction !== 'all') {
+        templates = templates.filter(t => t.direction === templateFilters.direction);
+    }
+    if (templateFilters.search) {
+        const search = templateFilters.search.toLowerCase();
+        templates = templates.filter(t => 
+            t.topic?.toLowerCase().includes(search) || 
+            t.postText?.toLowerCase().includes(search)
+        );
+    }
+    
+    // Сортируем по дате лайка (новые сверху)
+    templates.sort((a, b) => new Date(b.likedAt) - new Date(a.likedAt));
+    
+    if (badge) badge.textContent = appState.templates.length;
+    
+    // Создаём фильтры, если их ещё нет
+    const filtersContainer = document.getElementById('templates-filters');
+    if (filtersContainer && !filtersContainer.querySelector('.filter-bar')) {
+        filtersContainer.innerHTML = `
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">📱 Платформа</label>
+                    <select id="filter-platform" class="filter-select">
+                        <option value="all">Все платформы</option>
+                        <option value="Pinterest">📌 Pinterest</option>
+                        <option value="Insta">📸 Instagram</option>
+                        <option value="TG">✈️ Telegram</option>
+                        <option value="Блог">📝 Блог</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">🎯 Направление</label>
+                    <select id="filter-direction" class="filter-select">
+                        <option value="all">Все направления</option>
+                        <option value="Экспертность">🎓 Экспертность</option>
+                        <option value="Польза">💡 Польза</option>
+                        <option value="Продажа">💰 Продажа</option>
+                    </select>
+                </div>
+                <div class="filter-group flex-1">
+                    <label class="filter-label">🔍 Поиск</label>
+                    <input type="text" id="filter-search" class="filter-input" placeholder="Поиск по теме или тексту..." />
+                </div>
+            </div>
+        `;
+        
+        // Добавляем обработчики фильтров
+        document.getElementById('filter-platform').addEventListener('change', (e) => {
+            templateFilters.platform = e.target.value;
+            renderTemplates();
+        });
+        document.getElementById('filter-direction').addEventListener('change', (e) => {
+            templateFilters.direction = e.target.value;
+            renderTemplates();
+        });
+        document.getElementById('filter-search').addEventListener('input', (e) => {
+            templateFilters.search = e.target.value;
+            renderTemplates();
+        });
+    }
+    
     if (templates.length === 0) {
-        container.innerHTML = `<div class="empty-templates"><div class="empty-icon">⭐</div><p>Нет избранных шаблонов</p><p class="empty-hint">Лайкайте посты сердечком, они сохранятся в облако</p></div>`;
+        container.innerHTML = `
+            <div class="col-span-full empty-templates">
+                <div class="empty-icon">⭐</div>
+                <p>${appState.templates.length === 0 ? 'Нет избранных шаблонов' : 'Нет шаблонов по фильтрам'}</p>
+                <p class="empty-hint">${appState.templates.length === 0 ? 'Лайкайте посты сердечком, они сохранятся в облако' : 'Измените параметры фильтрации'}</p>
+            </div>
+        `;
         return;
     }
+    
     const tagIcons = { Pinterest: '📌', Insta: '📸', TG: '✈️', Блог: '📝' };
     const dirIcons = { Экспертность: '🎓', Польза: '💡', Продажа: '💰' };
+    
     container.innerHTML = templates.map(t => `
         <div class="template-card">
-            <div class="template-header"><div class="template-badges"><span class="template-tag">${tagIcons[t.tagKey]||'📌'} ${t.tagKey}</span><span class="template-direction">${dirIcons[t.direction]||'🎓'} ${t.direction}</span></div><button class="template-delete" data-id="${t.id}">🗑️</button></div>
+            <div class="template-header">
+                <div class="template-badges">
+                    <span class="template-tag">${tagIcons[t.tagKey]||'📌'} ${t.tagKey}</span>
+                    <span class="template-direction">${dirIcons[t.direction]||'🎓'} ${t.direction}</span>
+                </div>
+                <button class="template-delete" data-id="${t.id}">🗑️</button>
+            </div>
             <div class="template-title">${escapeHtml(t.topic)}</div>
-            <div class="template-preview">${escapeHtml(t.postText.substring(0,120))}...</div>
+            <div class="template-preview">${escapeHtml((t.postText || '').substring(0, 120))}...</div>
+            <div class="template-date">❤️ ${new Date(t.likedAt).toLocaleDateString('ru-RU')}</div>
             <button class="template-use" data-id="${t.id}">📋 Использовать шаблон</button>
         </div>
     `).join('');
-    container.querySelectorAll('.template-delete').forEach(btn => btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-id');
-        const confirmed = await customConfirm('Удалить из шаблонов?', 'Подтверждение');
-        if (confirmed) {
-            await deleteTemplateFromFirebase(id);
-            appState.templates = appState.templates.filter(t => t.id !== id);
-            saveState();
-            renderTemplates();
-            updateStats();
-            showNotification('Удалено из шаблонов', 'info');
-        }
-    }));
-    container.querySelectorAll('.template-use').forEach(btn => btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-id');
-        const template = appState.templates.find(t => t.id === id);
-        if (template) {
-            currentIdeaId = template.ideaId;
-            document.getElementById('post-output').value = template.postText;
-            autoResize(document.getElementById('post-output'));
-            document.getElementById('plan-date').value = formatISODate(new Date());
-            document.getElementById('plan-notes').value = '';
-            setActivePage('planner');
-            showNotification('📋 Шаблон загружен', 'success');
-        }
-    }));
+    
+    // Обработчики удаления
+    container.querySelectorAll('.template-delete').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const id = btn.getAttribute('data-id');
+            const confirmed = await customConfirm('Удалить из шаблонов?', 'Подтверждение');
+            if (confirmed) {
+                await deleteTemplateFromFirebase(id);
+                appState.templates = appState.templates.filter(t => t.id !== id);
+                saveState();
+                renderTemplates();
+                updateStats();
+                updateLikeButton();
+                showNotification('Удалено из шаблонов', 'info');
+            }
+        });
+    });
+    
+    // Обработчики использования
+    container.querySelectorAll('.template-use').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            const template = appState.templates.find(t => t.id === id);
+            if (template) {
+                currentIdeaId = template.ideaId;
+                document.getElementById('post-output').value = template.postText;
+                autoResize(document.getElementById('post-output'));
+                document.getElementById('plan-date').value = formatISODate(new Date());
+                document.getElementById('plan-notes').value = '';
+                updateLikeButton();
+                setActivePage('planner');
+                showNotification('📋 Шаблон загружен в редактор', 'success');
+            }
+        });
+    });
 }
 
-async function addTemplate(ideaId, postText, topic, direction, tagKey) {
-    if (!appState.templates) appState.templates = [];
-    if (appState.templates.find(t => t.ideaId === ideaId)) { showNotification('⭐ Пост уже в шаблонах', 'info'); return false; }
-    const newTemplate = { id: uid(), ideaId, postText, topic, direction, tagKey, likedAt: new Date().toISOString() };
-    const saved = await saveTemplateToFirebase(newTemplate);
-    if (saved) {
-        appState.templates.push(newTemplate);
-        saveState();
-        renderTemplates();
-        updateStats();
-        showNotification('❤️ Пост сохранён в облачные шаблоны!', 'success');
-        return true;
-    } else {
-        showNotification('❌ Ошибка сохранения в облако', 'error');
-        return false;
-    }
-}
-
-// ============ КАЛЕНДАРЬ ==========
+// ============ КАЛЕНДАРЬ ============
 let calCursor = new Date();
 let dragSource = null;
 
@@ -528,23 +670,46 @@ function renderCalendar() {
     const startOffset = (firstDay.getDay() + 6) % 7;
     const daysInMonth = lastDay.getDate();
     const calendarItems = {};
-    (appState.calendar || []).forEach(item => { if (item.date) { if (!calendarItems[item.date]) calendarItems[item.date] = []; calendarItems[item.date].push(item); } });
+    (appState.calendar || []).forEach(item => { 
+        if (item.date) { 
+            if (!calendarItems[item.date]) calendarItems[item.date] = []; 
+            calendarItems[item.date].push(item); 
+        } 
+    });
     const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
     const todayStr = formatISODate(new Date());
     const DIR_COLORS = { Экспертность: '#3b82f6', Польза: '#22c55e', Продажа: '#ef4444' };
     const DIR_ICONS = { Экспертность: '🎓', Польза: '💡', Продажа: '💰' };
-    let html = `<div class="calendar-header"><button class="calendar-nav-btn" id="cal-prev-month">◀</button><div class="calendar-month-title">${calCursor.toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</div><button class="calendar-nav-btn" id="cal-next-month">▶</button><button class="calendar-today-btn" id="cal-today">📅 Сегодня</button></div><div class="calendar-weekdays">${weekdays.map(day => `<div class="weekday">${day}</div>`).join('')}</div><div class="calendar-days">`;
+    
+    let html = `<div class="calendar-header">
+        <button class="calendar-nav-btn" id="cal-prev-month">◀</button>
+        <div class="calendar-month-title">${calCursor.toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}</div>
+        <button class="calendar-nav-btn" id="cal-next-month">▶</button>
+        <button class="calendar-today-btn" id="cal-today">📅 Сегодня</button>
+    </div>
+    <div class="calendar-weekdays">${weekdays.map(day => `<div class="weekday">${day}</div>`).join('')}</div>
+    <div class="calendar-days">`;
+    
     for (let i = 0; i < startOffset; i++) html += `<div class="calendar-day empty"></div>`;
+    
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         const items = calendarItems[dateStr] || [];
         const isToday = dateStr === todayStr;
-        html += `<div class="calendar-day ${isToday ? 'today' : ''}" data-date="${dateStr}"><div class="calendar-day-number">${day}</div><div class="calendar-items">`;
+        html += `<div class="calendar-day ${isToday ? 'today' : ''}" data-date="${dateStr}">
+            <div class="calendar-day-number">${day}</div>
+            <div class="calendar-items">`;
+        
         items.slice(0,3).forEach(item => {
             const idea = appState.ideas?.find(i => i.id === item.ideaId);
             const isPublished = item.published || false;
-            html += `<div class="calendar-item ${isPublished ? 'published' : ''}" data-item-id="${item.id}" data-date="${dateStr}" draggable="true" style="border-left-color: ${DIR_COLORS[item.direction] || '#64748b'}"><span class="item-icon">${DIR_ICONS[item.direction] || '📝'}</span><span class="item-title">${escapeHtml(idea?.topic?.substring(0,20) || item.direction)}</span>${isPublished ? '<span class="published-badge">✓</span>' : ''}</div>`;
+            html += `<div class="calendar-item ${isPublished ? 'published' : ''}" data-item-id="${item.id}" data-date="${dateStr}" draggable="true" style="border-left-color: ${DIR_COLORS[item.direction] || '#64748b'}">
+                <span class="item-icon">${DIR_ICONS[item.direction] || '📝'}</span>
+                <span class="item-title">${escapeHtml(idea?.topic?.substring(0,20) || item.direction)}</span>
+                ${isPublished ? '<span class="published-badge">✓</span>' : ''}
+            </div>`;
         });
+        
         if (items.length === 0) html += `<div class="calendar-item empty-slot"></div>`;
         if (items.length > 3) html += `<div class="calendar-more">+${items.length-3} еще</div>`;
         html += `</div></div>`;
@@ -555,152 +720,101 @@ function renderCalendar() {
 }
 
 function attachCalendarEvents() {
-    const items = document.querySelectorAll('.calendar-item');
-    const days = document.querySelectorAll('.calendar-day');
+    const items = document.querySelectorAll('.calendar-item:not(.empty-slot)');
+    const days = document.querySelectorAll('.calendar-day:not(.empty)');
+    
     items.forEach(item => {
-        if (item.classList.contains('empty-slot')) return;
         item.setAttribute('draggable','true');
-        item.addEventListener('dragstart', (e) => { dragSource = { id: item.getAttribute('data-item-id'), fromDate: item.getAttribute('data-date') }; e.dataTransfer.setData('text/plain', JSON.stringify(dragSource)); item.style.opacity='0.5'; });
-        item.addEventListener('dragend', () => { item.style.opacity=''; dragSource=null; });
-        item.addEventListener('click', (e) => { e.stopPropagation(); const id = item.getAttribute('data-item-id'); const calItem = appState.calendar?.find(c => c.id === id); if (calItem) openPostModal(calItem); });
+        item.addEventListener('dragstart', (e) => { 
+            dragSource = { 
+                id: item.getAttribute('data-item-id'), 
+                fromDate: item.getAttribute('data-date') 
+            }; 
+            e.dataTransfer.setData('text/plain', JSON.stringify(dragSource)); 
+            item.style.opacity='0.5'; 
+        });
+        item.addEventListener('dragend', () => { 
+            item.style.opacity=''; 
+            dragSource=null; 
+        });
+        item.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            const id = item.getAttribute('data-item-id'); 
+            const calItem = appState.calendar?.find(c => c.id === id); 
+            if (calItem) openPostModal(calItem); 
+        });
     });
+    
     days.forEach(day => {
-        day.addEventListener('dragover', (e) => { e.preventDefault(); day.classList.add('drag-over'); });
-        day.addEventListener('dragleave', () => { day.classList.remove('drag-over'); });
-        day.addEventListener('drop', (e) => { e.preventDefault(); day.classList.remove('drag-over'); const toDate = day.getAttribute('data-date'); if (dragSource && toDate !== dragSource.fromDate) { const calItem = appState.calendar?.find(c => c.id === dragSource.id); if (calItem) { calItem.date = toDate; const idea = appState.ideas?.find(i => i.id === calItem.ideaId); if (idea) idea.calendarDate = toDate; saveState(); renderCalendar(); showNotification('📅 Дата изменена', 'success'); } } });
+        day.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            day.classList.add('drag-over'); 
+        });
+        day.addEventListener('dragleave', () => { 
+            day.classList.remove('drag-over'); 
+        });
+        day.addEventListener('drop', (e) => { 
+            e.preventDefault(); 
+            day.classList.remove('drag-over'); 
+            const toDate = day.getAttribute('data-date'); 
+            if (dragSource && toDate !== dragSource.fromDate) { 
+                const calItem = appState.calendar?.find(c => c.id === dragSource.id); 
+                if (calItem) { 
+                    calItem.date = toDate; 
+                    const idea = appState.ideas?.find(i => i.id === calItem.ideaId); 
+                    if (idea) idea.calendarDate = toDate; 
+                    saveState(); 
+                    renderCalendar(); 
+                    showNotification('📅 Дата изменена', 'success'); 
+                } 
+            } 
+        });
     });
 }
 
-function openPostModal(calendarItem) {
-    const idea = appState.ideas?.find(i => i.id === calendarItem.ideaId);
-    if (!idea) return;
-    const isPublished = calendarItem.published || false;
-    const DIR_ICONS = { Экспертность: '🎓', Польза: '💡', Продажа: '💰' };
-    const TAG_ICONS = { Pinterest: '📌', Insta: '📸', TG: '✈️', Блог: '📝' };
-    
-    const html = `
-        <div class="post-modal">
-            <div class="modal-header">
-                <div class="modal-title">
-                    <span class="modal-icon">${DIR_ICONS[calendarItem.direction] || '📝'}</span> 
-                    ${escapeHtml(idea.topic || 'Без темы')}
-                </div>
-                <button class="modal-close" data-close-modal>✕</button>
-            </div>
-            <div class="modal-meta">
-                <div class="meta-item"><span class="meta-label">📅 Дата:</span><span class="meta-value">${calendarItem.date}</span></div>
-                <div class="meta-item"><span class="meta-label">📱 Платформа:</span><span class="meta-value">${TAG_ICONS[calendarItem.tagKey] || '📌'} ${calendarItem.tagKey}</span></div>
-                <div class="meta-item"><span class="meta-label">🎯 Направление:</span><span class="meta-value" style="color:${calendarItem.direction === 'Экспертность' ? '#3b82f6' : calendarItem.direction === 'Польза' ? '#22c55e' : '#ef4444'}">${DIR_ICONS[calendarItem.direction]} ${calendarItem.direction}</span></div>
-                <div class="meta-item"><span class="meta-label">📌 Статус:</span><span class="status-badge ${isPublished ? 'published' : 'draft'}">${isPublished ? '✅ Опубликован' : '📝 Черновик'}</span></div>
-            </div>
-            <div class="modal-divider"></div>
-            <div class="modal-section">
-                <div class="section-title">📝 Текст поста</div>
-                <div class="post-content" id="modal-post-content" style="white-space: pre-wrap;">${escapeHtml(idea.postText || 'Текст не сгенерирован')}</div>
-                <textarea id="modal-post-textarea" style="display:none; width:100%; min-height:200px; padding:12px; border-radius:12px; border:2px solid #6366f1; font-family:inherit; font-size:14px;">${escapeHtml(idea.postText || '')}</textarea>
-            </div>
-            ${calendarItem.notes ? `<div class="modal-section"><div class="section-title">📌 Заметки</div><div class="notes-content">${escapeHtml(calendarItem.notes)}</div></div>` : ''}
-            <div class="modal-divider"></div>
-            <div class="modal-actions">
-                <button class="btn btn--secondary" id="modal-copy-btn">📋 Копировать текст</button>
-                <button class="btn btn--secondary" id="modal-edit-toggle-btn">✏️ Редактировать</button>
-                ${!isPublished ? `<button class="btn btn--success" id="modal-publish-btn">✅ Отметить как опубликованный</button>` : `<button class="btn btn--warning" id="modal-draft-btn">📝 Вернуть в черновики</button>`}
-                <button class="btn btn--ghost" id="modal-close-btn">Закрыть</button>
-            </div>
-        </div>
-    `;
-    openModal(html);
-    
-    setTimeout(() => {
-        const contentDiv = document.getElementById('modal-post-content');
-        const textarea = document.getElementById('modal-post-textarea');
-        const editBtn = document.getElementById('modal-edit-toggle-btn');
-        const copyBtn = document.getElementById('modal-copy-btn');
-        const closeBtn = document.getElementById('modal-close-btn');
-        const publishBtn = document.getElementById('modal-publish-btn');
-        const draftBtn = document.getElementById('modal-draft-btn');
-        
-        let isEditMode = false;
-        
-        // Закрытие модалки
-        if (closeBtn) {
-            closeBtn.onclick = () => closeModal();
-        }
-        
-        // Обработчик публикации
-        if (publishBtn) {
-            publishBtn.onclick = () => {
-                markAsPublished(calendarItem.id);
-            };
-        }
-        
-        // Обработчик черновика
-        if (draftBtn) {
-            draftBtn.onclick = () => {
-                markAsDraft(calendarItem.id);
-            };
-        }
-        
-        if (editBtn) {
-            editBtn.onclick = () => {
-                if (!isEditMode) {
-                    contentDiv.style.display = 'none';
-                    textarea.style.display = 'block';
-                    editBtn.innerHTML = '💾 Сохранить';
-                    editBtn.classList.add('btn--primary');
-                    isEditMode = true;
-                } else {
-                    const newText = textarea.value;
-                    const ideaToUpdate = appState.ideas.find(i => i.id === calendarItem.ideaId);
-                    if (ideaToUpdate) {
-                        ideaToUpdate.postText = newText;
-                        saveState();
-                        showNotification('✅ Пост обновлён!', 'success');
-                        contentDiv.textContent = newText;
-                        contentDiv.style.whiteSpace = 'pre-wrap';
-                    }
-                    contentDiv.style.display = 'block';
-                    textarea.style.display = 'none';
-                    editBtn.innerHTML = '✏️ Редактировать';
-                    editBtn.classList.remove('btn--primary');
-                    isEditMode = false;
-                }
-            };
-        }
-        
-        if (copyBtn) {
-            copyBtn.onclick = () => {
-                const textToCopy = isEditMode ? textarea.value : contentDiv.innerText;
-                navigator.clipboard.writeText(textToCopy).then(() => showNotification('📋 Текст скопирован!', 'success'));
-            };
-        }
-    }, 50);
-}
-
-function markAsPublished(id) {
-    const item = appState.calendar?.find(c => c.id === id);
-    if (item) { item.published = true; item.publishedAt = new Date().toISOString(); saveState(); renderCalendar(); closeModal(); showNotification('✅ Пост отмечен как опубликованный!', 'success'); }
-}
-function markAsDraft(id) {
-    const item = appState.calendar?.find(c => c.id === id);
-    if (item) { item.published = false; delete item.publishedAt; saveState(); renderCalendar(); closeModal(); showNotification('📝 Пост возвращён в черновики', 'info'); }
-}
 function addToCalendar() {
-    if (!currentIdeaId) { showNotification('❌ Сначала сгенерируйте пост', 'warning'); return; }
+    if (!currentIdeaId) { 
+        showNotification('❌ Сначала сгенерируйте пост', 'warning'); 
+        return; 
+    }
     const idea = appState.ideas.find(i => i.id === currentIdeaId);
-    if (!idea || !idea.postText) { showNotification('❌ Сначала сгенерируйте пост', 'warning'); return; }
+    if (!idea || !idea.postText) { 
+        showNotification('❌ Сначала сгенерируйте пост', 'warning'); 
+        return; 
+    }
     const date = document.getElementById('plan-date')?.value || formatISODate(new Date());
     const notes = document.getElementById('plan-notes')?.value || '';
     const existing = appState.calendar?.find(c => c.ideaId === currentIdeaId);
     if (existing) {
         customConfirm('📅 Этот пост уже в календаре. Обновить дату?', 'Подтверждение').then(confirmed => {
-            if (confirmed) { existing.date = date; existing.notes = notes; idea.calendarDate = date; idea.notes = notes; saveState(); renderCalendar(); showNotification('📅 Дата обновлена!', 'success'); }
+            if (confirmed) { 
+                existing.date = date; 
+                existing.notes = notes; 
+                idea.calendarDate = date; 
+                idea.notes = notes; 
+                saveState(); 
+                renderCalendar(); 
+                showNotification('📅 Дата обновлена!', 'success'); 
+            }
         });
         return;
     }
-    appState.calendar.push({ id: uid(), date, ideaId: currentIdeaId, direction: idea.direction, tagKey: idea.tagKey, notes, published: false, createdAt: new Date().toISOString() });
-    idea.calendarDate = date; idea.notes = notes;
-    saveState(); renderCalendar(); showNotification('✅ Пост добавлен в календарь!', 'success'); setActivePage('calendar');
+    appState.calendar.push({ 
+        id: uid(), 
+        date, 
+        ideaId: currentIdeaId, 
+        direction: idea.direction, 
+        tagKey: idea.tagKey, 
+        notes, 
+        published: false, 
+        createdAt: new Date().toISOString() 
+    });
+    idea.calendarDate = date; 
+    idea.notes = notes;
+    saveState(); 
+    renderCalendar(); 
+    showNotification('✅ Пост добавлен в календарь!', 'success'); 
+    setActivePage('calendar');
 }
 
 // ============ СТАТИСТИКА ============
@@ -709,67 +823,116 @@ function updateStats() {
     const postsCount = appState.ideas?.filter(i => i.postText).length || 0;
     const templatesCount = appState.templates?.length || 0;
     const daysCount = new Set(appState.calendar?.map(c => c.date) || []).size;
-    const statIdeas = document.getElementById('stat-ideas'), statPosts = document.getElementById('stat-posts'), statTemplates = document.getElementById('stat-templates'), statDays = document.getElementById('stat-days');
+    
+    const statIdeas = document.getElementById('stat-ideas');
+    const statPosts = document.getElementById('stat-posts');
+    const statTemplates = document.getElementById('stat-templates');
+    const statDays = document.getElementById('stat-days');
+    
     if (statIdeas) statIdeas.textContent = ideasCount;
     if (statPosts) statPosts.textContent = postsCount;
     if (statTemplates) statTemplates.textContent = templatesCount;
     if (statDays) statDays.textContent = daysCount;
+    
     const tagStats = {};
     const tagColors = { Pinterest: '#ef4444', Insta: '#22c55e', TG: '#3b82f6', Блог: '#f59e0b' };
     const tagIcons = { Pinterest: '📌', Insta: '📸', TG: '✈️', Блог: '📝' };
-    appState.ideas?.forEach(idea => { tagStats[idea.tagKey] = (tagStats[idea.tagKey] || 0) + 1; });
+    appState.ideas?.forEach(idea => { 
+        tagStats[idea.tagKey] = (tagStats[idea.tagKey] || 0) + 1; 
+    });
     const tagsContainer = document.getElementById('stats-tags');
     if (tagsContainer) {
-        tagsContainer.innerHTML = Object.entries(tagStats).map(([key, count]) => `<div class="stat-tag-item"><div class="stat-tag-dot" style="background:${tagColors[key]||'#64748b'}"></div><span>${tagIcons[key]||'📌'} ${key}</span><span class="stat-tag-count">${count}</span></div>`).join('');
+        tagsContainer.innerHTML = Object.entries(tagStats).map(([key, count]) => 
+            `<div class="stat-tag-item">
+                <div class="stat-tag-dot" style="background:${tagColors[key]||'#64748b'}"></div>
+                <span>${tagIcons[key]||'📌'} ${key}</span>
+                <span class="stat-tag-count">${count}</span>
+            </div>`
+        ).join('');
     }
 }
 
 // ============ НАВИГАЦИЯ ============
 function setActivePage(page) {
-    ['planner','templates','calendar','statistics','account'].forEach(p => { const el = document.getElementById(`page-${p}`); if (el) el.classList.toggle('hidden', p !== page); });
-    const titles = { planner: { title: '🤖 AI Генератор постов', subtitle: 'Создайте идею → Получите готовый пост → Сохраняйте лучшие' }, templates: { title: '⭐ Избранные шаблоны', subtitle: 'Ваши посты сохраняются в облако' }, calendar: { title: '📅 Контент-календарь', subtitle: 'Планируйте публикации и отмечайте выполненные' }, statistics: { title: '📊 Статистика', subtitle: 'Анализируйте ваш контент' }, account: { title: '👤 Аккаунт', subtitle: 'Настройки и информация' } };
+    ['planner','templates','calendar','statistics','account'].forEach(p => { 
+        const el = document.getElementById(`page-${p}`); 
+        if (el) el.classList.toggle('hidden', p !== page); 
+    });
+    
+    const titles = { 
+        planner: { title: '🤖 AI Генератор постов', subtitle: 'Создайте идею → Получите готовый пост → Сохраняйте лучшие' }, 
+        templates: { title: '⭐ Избранные шаблоны', subtitle: 'Ваши посты сохраняются в облако' }, 
+        calendar: { title: '📅 Контент-календарь', subtitle: 'Планируйте публикации и отмечайте выполненные' }, 
+        statistics: { title: '📊 Статистика', subtitle: 'Анализируйте ваш контент' }, 
+        account: { title: '👤 Аккаунт', subtitle: 'Настройки и информация' } 
+    };
     const title = titles[page];
-    if (title) { document.getElementById('page-title').textContent = title.title; document.getElementById('page-subtitle').textContent = title.subtitle; }
+    if (title) { 
+        document.getElementById('page-title').textContent = title.title; 
+        document.getElementById('page-subtitle').textContent = title.subtitle; 
+    }
     history.replaceState({}, '', '#' + page);
     if (page === 'calendar') renderCalendar();
     if (page === 'templates') renderTemplates();
+    if (page === 'planner') updateLikeButton();
 }
 
-// ============ ОБРАБОТЧИКИ ============
-async function saveCurrentIdea() {
+// ============ ОСТАЛЬНЫЕ ФУНКЦИИ ============
+function saveCurrentIdea() {
     const topic = document.getElementById('idea-topic')?.value.trim();
     if (!topic) { showNotification('❌ Введите тему поста', 'warning'); return; }
-    addIdea({ topic, tagKey: document.getElementById('idea-tag')?.value, text: document.getElementById('idea-text')?.value.trim() || '', direction: document.getElementById('direction-select')?.value });
-    document.getElementById('idea-topic').value = ''; document.getElementById('idea-text').value = '';
+    addIdea({ 
+        topic, 
+        tagKey: document.getElementById('idea-tag')?.value, 
+        text: document.getElementById('idea-text')?.value.trim() || '', 
+        direction: document.getElementById('direction-select')?.value 
+    });
+    document.getElementById('idea-topic').value = ''; 
+    document.getElementById('idea-text').value = '';
     showNotification('💾 Идея сохранена!', 'success');
 }
+
 function copyPost() {
     const postText = document.getElementById('post-output')?.value;
-    if (!postText || postText === document.getElementById('post-output')?.placeholder) { showNotification('❌ Нет текста для копирования', 'warning'); return; }
-    navigator.clipboard.writeText(postText).then(() => showNotification('📋 Пост скопирован!', 'success')).catch(() => showNotification('❌ Не удалось скопировать', 'error'));
+    if (!postText || postText === document.getElementById('post-output')?.placeholder) { 
+        showNotification('❌ Нет текста для копирования', 'warning'); 
+        return; 
+    }
+    navigator.clipboard.writeText(postText)
+        .then(() => showNotification('📋 Пост скопирован!', 'success'))
+        .catch(() => showNotification('❌ Не удалось скопировать', 'error'));
 }
+
 function editPost() {
     const textarea = document.getElementById('post-output');
     if (textarea.readOnly) {
-        textarea.readOnly = false; textarea.style.background = '#fefce8';
-        document.getElementById('btn-edit-post').innerHTML = '✏️ Редактировать (активно)'; textarea.focus(); isEditing = true;
+        textarea.readOnly = false; 
+        textarea.style.background = '#fefce8';
+        document.getElementById('btn-edit-post').innerHTML = '✏️ Редактировать (активно)'; 
+        textarea.focus(); 
+        isEditing = true;
         showNotification('✏️ Режим редактирования включён', 'info');
     } else {
-        textarea.readOnly = true; textarea.style.background = '';
+        textarea.readOnly = true; 
+        textarea.style.background = '';
         document.getElementById('btn-edit-post').innerHTML = '✏️ Редактировать';
-        if (currentIdeaId) { const idea = appState.ideas.find(i => i.id === currentIdeaId); if (idea) { idea.postText = textarea.value; saveState(); showNotification('💾 Изменения сохранены', 'success'); } }
+        if (currentIdeaId) { 
+            const idea = appState.ideas.find(i => i.id === currentIdeaId); 
+            if (idea) { 
+                idea.postText = textarea.value; 
+                saveState(); 
+                showNotification('💾 Изменения сохранены', 'success'); 
+            } 
+        }
         isEditing = false;
     }
 }
-function likeCurrentPost() {
-    if (!currentIdeaId) { showNotification('❌ Нет активного поста', 'warning'); return; }
-    const idea = appState.ideas.find(i => i.id === currentIdeaId);
-    if (!idea || !idea.postText) { showNotification('❌ Сначала сгенерируйте пост', 'warning'); return; }
-    addTemplate(currentIdeaId, idea.postText, idea.topic, idea.direction, idea.tagKey);
-    const likeBtn = document.getElementById('btn-like-post'); likeBtn.innerHTML = '<i class="fa-solid fa-heart"></i> В шаблонах ✅'; likeBtn.disabled = true; likeBtn.classList.add('opacity-50');
-}
+
 async function regeneratePost() {
-    if (!currentIdeaId) { showNotification('❌ Нет активного поста', 'warning'); return; }
+    if (!currentIdeaId) { 
+        showNotification('❌ Нет активного поста', 'warning'); 
+        return; 
+    }
     const confirmed = await customConfirm('🔄 Перегенерировать пост? Текущий текст будет заменён.', 'Перегенерация');
     if (confirmed) {
         const postOutput = document.getElementById('post-output');
@@ -778,111 +941,100 @@ async function regeneratePost() {
         await generatePostForIdea(currentIdeaId, true);
     }
 }
+
 async function addEmptyIdea() {
     const topic = await customPrompt('📝 Введите тему поста:', '', 'Новая идея');
     if (!topic) return;
-    addIdea({ topic, tagKey: document.getElementById('idea-tag')?.value || 'Pinterest', text: '', direction: document.getElementById('direction-select')?.value || 'Экспертность' });
+    addIdea({ 
+        topic, 
+        tagKey: document.getElementById('idea-tag')?.value || 'Pinterest', 
+        text: '', 
+        direction: document.getElementById('direction-select')?.value || 'Экспертность' 
+    });
     showNotification('✨ Новая идея создана', 'success');
 }
-function openAutoGenerateModal() {
-    const html = `<div class="custom-modal auto-generate-modal"><div class="modal-header"><div class="modal-title">🎲 Авто-генерация идей</div><button class="modal-close-btn" onclick="closeModal()">✕</button></div><div class="modal-body"><div class="form-group"><label class="form-label">🎯 Тема / Ниша</label><input type="text" id="auto-topic" class="form-input" placeholder="Например: маркетинг, здоровье, бизнес..." /></div><div class="form-group"><label class="form-label">📊 Направление</label><select id="auto-direction" class="form-select"><option value="Экспертность">🎓 Экспертность</option><option value="Польза">💡 Польза</option><option value="Продажа">💰 Продажа</option></select></div><div class="form-group"><label class="form-label">🔢 Количество идей</label><select id="auto-count" class="form-select"><option value="3">3 идеи</option><option value="5">5 идей</option><option value="10">10 идей</option></select></div></div><div class="modal-footer"><button class="btn btn--ghost" onclick="closeModal()">Отмена</button><button class="btn btn--primary" onclick="generateAutoIdeas()">🚀 Сгенерировать</button></div></div>`;
-    openModal(html);
-}
+
 function generateAutoIdeas() {
     const topic = document.getElementById('auto-topic')?.value.trim() || 'контент-маркетинг';
-    const direction = document.getElementById('auto-direction')?.value;
+    const direction = document.getElementById('auto-direction')?.value || 'Экспертность';
     const count = parseInt(document.getElementById('auto-count')?.value || '3');
-    const topicsList = [`${topic}: 10 ошибок, которые убивают результат`,`Как увеличить вовлечённость в ${topic} за 5 шагов`,`Секреты успешного ${topic} от экспертов`,`Топ-5 инструментов для ${topic} в 2024`,`Кейс: как я вывел ${topic} на новый уровень`,`Почему 90% людей терпят неудачу в ${topic}`,`Пошаговый план для начинающих в ${topic}`,`${topic} для чайников: с чего начать?`,`Как монетизировать ${topic} и заработать первые деньги`];
+    const topicsList = [
+        `${topic}: 10 ошибок, которые убивают результат`,
+        `Как увеличить вовлечённость в ${topic} за 5 шагов`,
+        `Секреты успешного ${topic} от экспертов`,
+        `Топ-5 инструментов для ${topic} в 2025`,
+        `Кейс: как я вывел ${topic} на новый уровень`,
+        `Почему 90% людей терпят неудачу в ${topic}`,
+        `Пошаговый план для начинающих в ${topic}`,
+        `${topic} для чайников: с чего начать?`,
+        `Как монетизировать ${topic} и заработать первые деньги`
+    ];
     for (let i = 0; i < Math.min(count, topicsList.length); i++) {
-        addIdea({ topic: topicsList[i], tagKey: ['Pinterest','Insta','TG','Блог'][Math.floor(Math.random()*4)], text: `Авто-генерация по теме "${topic}"`, direction });
+        addIdea({ 
+            topic: topicsList[i], 
+            tagKey: ['Pinterest','Insta','TG','Блог'][Math.floor(Math.random()*4)], 
+            text: `Авто-генерация по теме "${topic}"`, 
+            direction 
+        });
     }
-    closeModal(); showNotification(`✨ Добавлено ${count} идей на тему "${topic}"`, 'success');
+    closeModal(); 
+    showNotification(`✨ Добавлено ${count} идей на тему "${topic}"`, 'success');
 }
-function exportToExcel() {
-    const data = (appState.calendar || []).map(item => { const idea = appState.ideas.find(i => i.id === item.ideaId); return { 'Дата': item.date, 'Платформа': item.tagKey, 'Направление': item.direction, 'Тема': idea?.topic || '', 'Текст поста': idea?.postText || '', 'Заметки': item.notes || '', 'Статус': item.published ? 'Опубликован' : 'Черновик' }; });
-    if (data.length === 0) { showNotification('❌ Нет данных для экспорта', 'warning'); return; }
-    const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Посты'); XLSX.writeFile(wb, `glitchless-pin-${formatISODate(new Date())}.xlsx`);
-    showNotification('📊 Экспорт завершен!', 'success');
-}
-function exportToJSON() {
-    const exportData = { ideas: appState.ideas, calendar: appState.calendar, templates: appState.templates, exportedAt: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `glitchless-pin-${formatISODate(new Date())}.json`; a.click(); URL.revokeObjectURL(url);
-    showNotification('💾 JSON экспортирован!', 'success');
-}
-async function clearAllData() {
-    const confirmed = await customConfirm('⚠️ УДАЛЕНИЕ ВСЕХ ДАННЫХ\n\nЭто действие удалит все ваши идеи, посты, шаблоны и календарь. Данные нельзя будет восстановить.\n\nВы уверены?', 'Подтверждение удаления');
-    if (confirmed) {
-        for (const template of appState.templates) {
-            await deleteTemplateFromFirebase(template.id);
-        }
-        localStorage.removeItem(CONFIG.LS_KEY);
-        appState = { ideas: [], calendar: [], templates: [], version: 3 };
-        currentIdeaId = null;
-        renderIdeas(); renderCalendar(); renderTemplates(); updateStats();
-        document.getElementById('post-output').value = ''; document.getElementById('post-output').placeholder = '✨ Здесь появится готовый пост после генерации...';
-        showNotification('🗑️ Все данные удалены', 'info');
-    }
-}
-function openHashtagsModal() {
-    const categories = {
-        '🔥 Популярные': ['#socialmedia','#contentcreator','#viral','#trending','#explore','#fyp','#рекомендации'],
-        '💼 Бизнес': ['#business','#entrepreneur','#marketing','#success','#growth','#бизнес','#маркетинг'],
-        '📸 Instagram': ['#instagram','#instagood','#reels','#explorepage','#instadaily','#instagramtips'],
-        '✈️ Telegram': ['#telegram','#tgchannel','#telegramchannel','#tgbot','#telegrammarketing','#телеграм'],
-        '📌 Pinterest': ['#pinterest','#pinterestmarketing','#pinspiration','#pintereststrategy','#pinteresttips','#пинтерест'],
-        '📝 Блогинг': ['#blogger','#blogging','#influencer','#contentmarketing','#digitalcreator','#блогер']
-    };
-    let html = `<div class="hashtags-modal"><div class="modal-header"><div class="modal-title">🏷️ Добавить хэштеги</div><button class="modal-close" data-close-modal>✕</button></div><div class="modal-body"><div class="hashtags-categories">`;
-    for (const [cat, tags] of Object.entries(categories)) {
-        html += `<div class="hashtag-category"><div class="category-title">${cat}</div><div class="category-tags">${tags.map(t => `<button class="hashtag-btn" onclick="addHashtagToEditor('${t}')">${t}</button>`).join('')}</div></div>`;
-    }
-    html += `</div><div class="custom-hashtag"><input type="text" id="custom-hashtag-input" class="form-input" placeholder="Свой хэштег..." /><button class="btn btn--primary" onclick="addCustomHashtag()">➕ Добавить</button></div></div><div class="modal-footer"><button class="btn btn--secondary" onclick="insertPopularHashtags()">✨ Вставить популярные</button><button class="btn btn--ghost" onclick="closeModal()">Закрыть</button></div></div>`;
+
+function openAutoGenerateModal() {
+    const html = `<div class="custom-modal auto-generate-modal">
+        <div class="modal-header">
+            <div class="modal-title">🎲 Авто-генерация идей</div>
+            <button class="modal-close" data-close-modal>✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group"><label class="form-label">🎯 Тема / Ниша</label><input type="text" id="auto-topic" class="form-input" placeholder="Например: маркетинг, здоровье, бизнес..." /></div>
+            <div class="form-group"><label class="form-label">📊 Направление</label><select id="auto-direction" class="form-select"><option value="Экспертность">🎓 Экспертность</option><option value="Польза">💡 Польза</option><option value="Продажа">💰 Продажа</option></select></div>
+            <div class="form-group"><label class="form-label">🔢 Количество идей</label><select id="auto-count" class="form-select"><option value="3">3 идеи</option><option value="5">5 идей</option><option value="10">10 идей</option></select></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn--ghost" onclick="closeModal()">Отмена</button><button class="btn btn--primary" onclick="generateAutoIdeas()">🚀 Сгенерировать</button></div>
+    </div>`;
     openModal(html);
-}
-function addHashtagToEditor(tag) {
-    const postOutput = document.getElementById('post-output');
-    postOutput.value = postOutput.value + ' ' + tag;
-    autoResize(postOutput);
-    if (currentIdeaId && !isEditing) { const idea = appState.ideas.find(i => i.id === currentIdeaId); if (idea) { idea.postText = postOutput.value; saveState(); } }
-    showNotification(`➕ Добавлен ${tag}`, 'success');
-}
-function addCustomHashtag() {
-    const input = document.getElementById('custom-hashtag-input');
-    let tag = input?.value.trim();
-    if (!tag) { showNotification('Введите хэштег', 'warning'); return; }
-    if (!tag.startsWith('#')) tag = '#' + tag;
-    addHashtagToEditor(tag);
-    if (input) input.value = '';
-}
-function insertPopularHashtags() {
-    const popular = ['#contentcreator','#socialmedia','#viral','#trending','#fyp'];
-    popular.forEach(tag => addHashtagToEditor(tag));
-    closeModal();
 }
 
 // ============ ИНИЦИАЛИЗАЦИЯ ============
-function init() {
+async function init() {
     appState = loadState();
     
-    // Привязываем глобальные обработчики
+    // Загружаем шаблоны из Firebase и объединяем с локальными
+    const cloudTemplates = await loadAllTemplatesFromFirebase();
+    
+    // Объединяем локальные и облачные шаблоны (без дубликатов)
+    const localIds = new Set(appState.templates.map(t => t.id));
+    cloudTemplates.forEach(t => {
+        if (!localIds.has(t.id)) {
+            appState.templates.push(t);
+        }
+    });
+    
+    // Сохраняем объединённое состояние
+    saveState();
+    
+    // Привязываем глобальные функции
     window.generateAutoIdeas = generateAutoIdeas;
-    window.addHashtagToEditor = addHashtagToEditor;
-    window.addCustomHashtag = addCustomHashtag;
-    window.insertPopularHashtags = insertPopularHashtags;
-    window.markAsPublished = markAsPublished;
-    window.markAsDraft = markAsDraft;
+    window.closeModal = closeModal;
     
     // Навигация
-    document.querySelectorAll('.navlink[data-page]').forEach(btn => btn.addEventListener('click', () => setActivePage(btn.getAttribute('data-page'))));
+    document.querySelectorAll('.navlink[data-page]').forEach(btn => 
+        btn.addEventListener('click', () => setActivePage(btn.getAttribute('data-page')))
+    );
     
     // Кнопки
     document.getElementById('btn-generate-auto')?.addEventListener('click', openAutoGenerateModal);
-    document.getElementById('btn-add-hashtags')?.addEventListener('click', openHashtagsModal);
     document.getElementById('btn-generate-idea')?.addEventListener('click', () => {
         const topic = document.getElementById('idea-topic')?.value.trim();
         if (!topic) { showNotification('❌ Введите тему поста', 'warning'); return; }
-        const newIdea = addIdea({ topic, tagKey: document.getElementById('idea-tag')?.value, text: document.getElementById('idea-text')?.value.trim() || '', direction: document.getElementById('direction-select')?.value });
+        const newIdea = addIdea({ 
+            topic, 
+            tagKey: document.getElementById('idea-tag')?.value, 
+            text: document.getElementById('idea-text')?.value.trim() || '', 
+            direction: document.getElementById('direction-select')?.value 
+        });
         generatePostForIdea(newIdea.id, true);
     });
     document.getElementById('btn-save-idea')?.addEventListener('click', saveCurrentIdea);
@@ -892,20 +1044,17 @@ function init() {
     document.getElementById('btn-edit-post')?.addEventListener('click', editPost);
     document.getElementById('btn-like-post')?.addEventListener('click', likeCurrentPost);
     document.getElementById('btn-regenerate-post')?.addEventListener('click', regeneratePost);
-    document.getElementById('btn-generate-excel')?.addEventListener('click', exportToExcel);
     document.getElementById('btn-export-json')?.addEventListener('click', exportToJSON);
-    document.getElementById('btn-clear')?.addEventListener('click', clearAllData);
+    document.getElementById('btn-generate-excel')?.addEventListener('click', exportToExcel);
     
     // Календарь навигация
-    const prevBtn = document.getElementById('cal-prev-month');
-    const nextBtn = document.getElementById('cal-next-month');
-    const todayBtn = document.getElementById('cal-today');
-    if (prevBtn) prevBtn.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
-    if (nextBtn) nextBtn.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
-    if (todayBtn) todayBtn.addEventListener('click', () => { calCursor = new Date(); renderCalendar(); });
+    document.getElementById('cal-prev-month')?.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
+    document.getElementById('cal-next-month')?.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
+    document.getElementById('cal-today')?.addEventListener('click', () => { calCursor = new Date(); renderCalendar(); });
     
     // Дата по умолчанию
-    if (document.getElementById('plan-date') && !document.getElementById('plan-date').value) document.getElementById('plan-date').value = formatISODate(new Date());
+    if (document.getElementById('plan-date') && !document.getElementById('plan-date').value) 
+        document.getElementById('plan-date').value = formatISODate(new Date());
     
     // Auto-resize
     document.querySelectorAll('.auto-resize').forEach(autoResize);
@@ -917,15 +1066,109 @@ function init() {
     renderCalendar();
     renderTemplates();
     updateStats();
+    updateLikeButton();
     setActivePage('planner');
     
-    // Загружаем шаблоны из Firebase
-    if (window.db) {
-        loadTemplatesFromFirebase();
-    }
-    
-    showNotification('🎉 Glitchless Pin готов к работе! Шаблоны синхронизируются с облаком', 'success');
+    showNotification('🎉 Glitchless Pin готов! Шаблоны синхронизированы с облаком ☁️', 'success');
 }
+
+// Экспорт
+function exportToJSON() {
+    const exportData = { 
+        ideas: appState.ideas, 
+        calendar: appState.calendar, 
+        templates: appState.templates, 
+        exportedAt: new Date().toISOString() 
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob); 
+    const a = document.createElement('a'); 
+    a.href = url; 
+    a.download = `glitchless-pin-${formatISODate(new Date())}.json`; 
+    a.click(); 
+    URL.revokeObjectURL(url);
+    showNotification('💾 JSON экспортирован!', 'success');
+}
+
+function exportToExcel() {
+    if (typeof XLSX === 'undefined') {
+        showNotification('❌ Библиотека Excel не загружена', 'error');
+        return;
+    }
+    const data = (appState.calendar || []).map(item => { 
+        const idea = appState.ideas.find(i => i.id === item.ideaId); 
+        return { 
+            'Дата': item.date, 
+            'Платформа': item.tagKey, 
+            'Направление': item.direction, 
+            'Тема': idea?.topic || '', 
+            'Текст поста': idea?.postText || '', 
+            'Заметки': item.notes || '', 
+            'Статус': item.published ? 'Опубликован' : 'Черновик' 
+        }; 
+    });
+    if (data.length === 0) { showNotification('❌ Нет данных для экспорта', 'warning'); return; }
+    const ws = XLSX.utils.json_to_sheet(data); 
+    const wb = XLSX.utils.book_new(); 
+    XLSX.utils.book_append_sheet(wb, ws, 'Посты'); 
+    XLSX.writeFile(wb, `glitchless-pin-${formatISODate(new Date())}.xlsx`);
+    showNotification('📊 Экспорт завершен!', 'success');
+}
+
+// ============ ПЕРЕКЛЮЧЕНИЕ ТЕМ ============
+function initThemeSwitcher() {
+    const sidebarFooter = document.querySelector('.sidebar__footer');
+    if (!sidebarFooter) return;
+    
+    // Создаём переключатель тем
+    const switcher = document.createElement('div');
+    switcher.className = 'theme-switcher';
+    switcher.innerHTML = `
+        <button class="theme-btn" data-theme="light" title="Светлая тема">☀️</button>
+        <button class="theme-btn" data-theme="dark" title="Тёмная тема">🌙</button>
+        <button class="theme-btn" data-theme="pink" title="Розовая тема">🌸</button>
+        <button class="theme-btn" data-theme="green" title="Зелёная тема">🌿</button>
+    `;
+    
+    // Вставляем перед кнопками экспорта
+    sidebarFooter.insertBefore(switcher, sidebarFooter.firstChild);
+    
+    // Загружаем сохранённую тему
+    const savedTheme = localStorage.getItem('glitchless-theme') || 'light';
+    applyTheme(savedTheme);
+    
+    // Обработчики кликов
+    switcher.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.getAttribute('data-theme');
+            applyTheme(theme);
+            localStorage.setItem('glitchless-theme', theme);
+        });
+    });
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Обновляем активную кнопку
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+    });
+    
+    // Обновляем фон body
+    const gradients = {
+        light: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        dark: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)',
+        pink: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+        green: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)'
+    };
+    document.body.style.background = gradients[theme] || gradients.light;
+}
+
+// Добавь вызов initThemeSwitcher() в функцию init():
+// Внутри init(), после showNotification в самом конце:
+// initThemeSwitcher();
+
 
 // Запуск
 document.addEventListener('DOMContentLoaded', init);
