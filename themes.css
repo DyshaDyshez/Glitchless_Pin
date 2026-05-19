@@ -314,3 +314,40 @@ body {
     color: white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* Дополнительная читаемость для тёмной темы */
+[data-theme="dark"] .calendar-day,
+[data-theme="dark"] .idea-card,
+[data-theme="dark"] .template-card,
+[data-theme="dark"] .stat-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .calendar-day.today {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="dark"] .calendar-item {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-left-color: var(--accent-primary);
+}
+
+[data-theme="dark"] .calendar-item.published {
+    background: #334155;
+    opacity: 0.7;
+}
+
+[data-theme="dark"] .filter-bar {
+    background: var(--bg-hover);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .post-output {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
