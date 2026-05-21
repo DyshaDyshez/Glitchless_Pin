@@ -7,6 +7,16 @@ export function renderTemplates() {
     const container = document.getElementById('templates-list');
     const badge = document.getElementById('templates-badge');
     const templates = appState.templates || [];
+    // Скрываем шаблоны локально у текущего пользователя
+    const hiddenTemplatesKey = 'glitchless-pin-hidden-templates';
+    const hiddenUserIdKey = 'glitchless-pin-user-id';
+    let userId = localStorage.getItem(hiddenUserIdKey);
+    if (!userId) userId = uid();
+    const rawHidden = localStorage.getItem(hiddenTemplatesKey);
+    let parsedHidden = {};
+    try { parsedHidden = rawHidden ? JSON.parse(rawHidden) : {}; } catch { parsedHidden = {}; }
+    const hiddenSet = new Set(Array.isArray(parsedHidden[userId]) ? parsedHidden[userId] : []);
+    const visibleTemplates = templates.filter(t => !hiddenSet.has(t.id));
     if (badge) badge.textContent = templates.length;
     if (!container) return;
     if (templates.length === 0) {
@@ -26,7 +36,26 @@ export function renderTemplates() {
     container.querySelectorAll('.template-delete').forEach(btn => btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         const confirmed = await customConfirm('Удалить из шаблонов?', 'Подтверждение');
-        if (confirmed) { appState.templates = appState.templates.filter(t => t.id !== id); saveState(); renderTemplates(); showNotification('Удалено из шаблонов', 'info'); }
+            if (confirmed) {
+                const hiddenKey = 'glitchless-pin-user-id';
+                let userId = localStorage.getItem(hiddenKey);
+                if (!userId) {
+                    userId = uid();
+                    localStorage.setItem(hiddenKey, userId);
+                }
+                const hiddenTemplatesKey = 'glitchless-pin-hidden-templates';
+                const raw = localStorage.getItem(hiddenTemplatesKey);
+                let parsed = {};
+                try { parsed = raw ? JSON.parse(raw) : {}; } catch { parsed = {}; }
+                if (!Array.isArray(parsed[userId])) parsed[userId] = [];
+                if (!parsed[userId].includes(id)) parsed[userId].push(id);
+                localStorage.setItem(hiddenTemplatesKey, JSON.stringify(parsed));
+
+                appState.templates = appState.templates.filter(t => t.id !== id);
+                saveState();
+                renderTemplates();
+                showNotification('Скрыто у этого пользователя', 'info');
+            }
     }));
     container.querySelectorAll('.template-use').forEach(btn => btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');

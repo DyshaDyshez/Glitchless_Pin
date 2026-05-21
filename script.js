@@ -1,7 +1,45 @@
 // ============ КОНФИГУРАЦИЯ ============
 const CONFIG = {
     LS_KEY: 'glitchless-pin-v3',
+    USER_ID_KEY: 'glitchless-pin-user-id',
+    HIDDEN_TEMPLATES_KEY: 'glitchless-pin-hidden-templates',
 };
+
+function getUserId() {
+    let id = localStorage.getItem(CONFIG.USER_ID_KEY);
+    if (!id) {
+        id = uid();
+        localStorage.setItem(CONFIG.USER_ID_KEY, id);
+    }
+    return id;
+}
+
+function getHiddenTemplatesSet() {
+    const raw = localStorage.getItem(CONFIG.HIDDEN_TEMPLATES_KEY);
+    if (!raw) return new Set();
+    try {
+        const parsed = JSON.parse(raw);
+        const userId = getUserId();
+        const arr = parsed?.[userId] || [];
+        return new Set(arr);
+    } catch {
+        return new Set();
+    }
+}
+
+function addHiddenTemplateForCurrentUser(templateId) {
+    const userId = getUserId();
+    const raw = localStorage.getItem(CONFIG.HIDDEN_TEMPLATES_KEY);
+    let parsed = {};
+    try {
+        parsed = raw ? JSON.parse(raw) : {};
+    } catch {
+        parsed = {};
+    }
+    if (!Array.isArray(parsed[userId])) parsed[userId] = [];
+    if (!parsed[userId].includes(templateId)) parsed[userId].push(templateId);
+    localStorage.setItem(CONFIG.HIDDEN_TEMPLATES_KEY, JSON.stringify(parsed));
+}
 
 // ============ ГЛОБАЛЬНОЕ СОСТОЯНИЕ ============
 let appState = { ideas: [], calendar: [], templates: [], version: 3 };
@@ -638,9 +676,12 @@ function renderTemplates() {
             const id = btn.getAttribute('data-id');
             const confirmed = await customConfirm('Удалить из шаблонов?', 'Подтверждение');
             if (confirmed) {
-                await deleteTemplateFromFirebase(id);
+                addHiddenTemplateForCurrentUser(id);
                 appState.templates = appState.templates.filter(t => t.id !== id);
+                // local-only hide: не удаляем шаблон из Firestore
+
                 saveState();
+
                 renderTemplates();
                 updateStats();
                 updateLikeButton();
