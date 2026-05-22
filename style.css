@@ -2303,6 +2303,31 @@ body, .main, .page {
   grid-column: 1 / -1;
 }
 
+/* Логотип в сайдбаре */
+.sidebar__logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    object-fit: contain;
+}
+
+/* Если нужно сохранить эмодзи как fallback, можно использовать так: */
+.sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Для мобильной версии */
+@media (max-width: 768px) {
+    .sidebar__logo-img {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+
+
 /* Кнопка лайка */
 #btn-like-post:disabled {
   cursor: not-allowed;
