@@ -2308,7 +2308,7 @@ body, .main, .page {
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    object-fit: cover;
+    
 }
 
 /* Если нужно сохранить эмодзи как fallback, можно использовать так: */
