@@ -2305,10 +2305,10 @@ body, .main, .page {
 
 /* Логотип в сайдбаре */
 .sidebar__logo-img {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    object-fit: contain;
 }
 
 /* Если нужно сохранить эмодзи как fallback, можно использовать так: */
@@ -2325,7 +2325,6 @@ body, .main, .page {
         height: 32px;
     }
 }
-
 
 
 /* Кнопка лайка */
