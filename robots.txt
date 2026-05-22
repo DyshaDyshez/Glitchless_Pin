@@ -1,0 +1,14 @@
+# robots.txt для Glitchless Pin
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /firebase/
+Disallow: /private/
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://glitchless-pin.web.app/sitemap.xml
+
+# Основные параметры
+Crawl-delay: 1
+Host: https://glitchless-pin.web.app
