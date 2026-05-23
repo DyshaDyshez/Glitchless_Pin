@@ -6,7 +6,7 @@
   
   <!-- Главная страница (AI Генератор) -->
   <url>
-    <loc>https://glitchless-pin.web.app/</loc>
+    <loc>https://dyshadyshez.github.io/Glitchless_Pin/</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -14,7 +14,7 @@
   
   <!-- Планирование контента -->
   <url>
-    <loc>https://glitchless-pin.web.app/#planner</loc>
+    <loc>https://dyshadyshez.github.io/Glitchless_Pin/#planner</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -22,7 +22,7 @@
   
   <!-- Шаблоны постов -->
   <url>
-    <loc>https://glitchless-pin.web.app/#templates</loc>
+    <loc>https://dyshadyshez.github.io/Glitchless_Pin/#templates</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -30,7 +30,7 @@
   
   <!-- Контент-календарь -->
   <url>
-    <loc>https://glitchless-pin.web.app/#calendar</loc>
+    <loc>https://dyshadyshez.github.io/Glitchless_Pin/#calendar</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -38,7 +38,7 @@
   
   <!-- Статистика -->
   <url>
-    <loc>https://glitchless-pin.web.app/#statistics</loc>
+    <loc>https://dyshadyshez.github.io/Glitchless_Pin/#statistics</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -46,7 +46,7 @@
   
   <!-- Аккаунт пользователя -->
   <url>
-    <loc>https://glitchless-pin.web.app/#account</loc>
+    <loc>https://dyshadyshez.github.io/Glitchless_Pin/#account</loc>
     <lastmod>2026-05-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
