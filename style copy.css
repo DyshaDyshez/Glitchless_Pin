@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 /* Глобальный z-index для всех слоев */
-
-
-
+.theme-mobile__menu {
+  z-index: 99999 !important;
+}
 * {
   margin: 0;
   padding: 0;
@@ -37,6 +37,7 @@ body {
 .sidebar {
   width: 280px;
   background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
   color: #e2e8f0;
   border-right: 1px solid rgba(148, 163, 184, 0.3);
   padding: 20px 16px;
@@ -2431,6 +2432,26 @@ body, .main, .page {
     transform: rotate(180deg);
   }
   
+  .theme-mobile__menu {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary, #1e293b);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    margin-bottom: 8px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    min-width: 140px;
+    overflow: hidden;
+    border: 1px solid var(--border-color, #334155);
+  }
+  
+  .theme-mobile__menu.show {
+    display: flex;
+  }
   
   .theme-mobile__item {
     padding: 10px 14px;
@@ -2583,6 +2604,23 @@ body, .main, .page {
     display: inline;
   }
   
+  .theme-mobile__menu {
+    position: fixed;
+    bottom: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    background: var(--bg-secondary, #1e293b);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    margin-bottom: 0;
+  }
+  
+  .theme-mobile__menu.show {
+    display: flex;
+  }
   
   /* Календарь */
   .calendar-days {
@@ -2780,320 +2818,134 @@ body, .main, .page {
   }
 }
 
-/* ============ ЕДИНСТВЕННОЕ ПРАВИЛЬНОЕ МЕНЮ ТЕМ ============ */
+/* ============ ИСПРАВЛЕНИЕ МЕНЮ ТЕМ (ВСЕГДА ПОВЕРХ) ============ */
 .theme-mobile {
   position: relative;
 }
 
-.theme-mobile__btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  cursor: pointer;
-}
-.theme-mobile__btn i {
-  font-size: 10px;
-  transition: transform 0.2s;
-}
-.theme-mobile__btn[aria-expanded="true"] i {
-  transform: rotate(180deg);
-}
-
-/* ПК: меню над кнопкой */
 .theme-mobile__menu {
-  position: absolute !important;
-  bottom: 100% !important;
-  left: 0 !important;
-  top: auto !important;
-  right: auto !important;
-  transform: none !important;
-  width: 200px !important;
-  background: #1e293b !important;
-  border-radius: 12px !important;
-  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3) !important;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 220px !important;
+  max-width: 90vw !important;
+  background: var(--bg-secondary, #1e293b) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  z-index: 999999 !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px) !important;
   display: none !important;
   flex-direction: column !important;
-  margin-bottom: 8px !important;
-  overflow: hidden !important;
-}
-
-/* Мобилки: меню по центру */
-@media (max-width: 768px) {
-  .theme-mobile__menu {
-    position: fixed !important;
-    bottom: auto !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 220px !important;
-    margin-bottom: 0 !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
-  }
-  .theme-mobile__menu.show::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: -1;
-  }
 }
 
 .theme-mobile__menu.show {
   display: flex !important;
 }
 
+/* Затемнение фона */
+.theme-mobile__menu.show::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: -1;
+  animation: fadeIn 0.2s ease;
+}
+
 .theme-mobile__item {
-  padding: 12px 16px !important;
+  padding: 14px 20px !important;
   background: transparent !important;
   border: none !important;
   text-align: left !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   font-weight: 500 !important;
   cursor: pointer !important;
-  color: white !important;
-  transition: background 0.2s ease !important;
+  color: var(--text-primary, white) !important;
+  transition: all 0.2s ease !important;
+  font-family: inherit !important;
 }
+
 .theme-mobile__item:hover {
   background: rgba(255, 255, 255, 0.1) !important;
 }
+
 .theme-mobile__item[aria-checked="true"] {
   background: #6366f1 !important;
   color: white !important;
 }
 
-/* Скрываем старый десктопный переключатель из themes.css */
-.theme-switcher {
-  display: none !important;
+/* Убеждаемся, что меню выше всего */
+.modal-root,
+.modal-backdrop,
+.modal-content,
+#modal-root,
+.notification-container {
+  z-index: auto !important;
 }
 
-/* Обработка клавиатуры на мобилках */
-@media (max-width: 768px) {
-  body.keyboard-open {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-  }
-  body.keyboard-open .main {
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  .input:focus, textarea:focus, .form-input:focus {
-    scroll-margin-top: 80px;
-  }
+/* Кнопка темы - выше остального */
+#btn-theme-mobile {
+  position: relative;
+  z-index: 10;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============ МЕНЮ ТЕМ ПОВЕРХ ВСЕГО ============ */
 .theme-mobile__menu {
-  z-index: 1100; /* выше модалок */
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 220px !important;
+  background: #1e293b !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+  z-index: 9999999 !important;
+  overflow: hidden !important;
+  display: none !important;
+  flex-direction: column !important;
 }
 
-@media (max-width: 768px) {
-  .theme-mobile__menu.show::before {
-    content: '';
-    position: fixed;   /* вместо относительного */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: -1;       /* остаётся под меню, но над всем остальным */
-  }
+.theme-mobile__menu.show {
+  display: flex !important;
 }
 
-/* Исправленное меню тем на мобилках — под кнопкой */
-@media (max-width: 768px) {
-  .theme-mobile {
-    position: relative;
-  }
-  
-  .theme-mobile__menu {
-    position: absolute !important;
-    top: calc(100% + 5px) !important;
-    left: 0 !important;
-    right: auto !important;
-    transform: none !important;
-    width: 180px !important;
-    background: #1e293b !important;
-    border-radius: 12px !important;
-    z-index: 9999 !important;
-    display: none !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-  }
-  
-  .theme-mobile__menu.show {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  
-  .theme-mobile__menu::before {
-    display: none !important; /* убираем полноэкранное затемнение */
-  }
-  
-  .theme-mobile__item {
-    padding: 12px 16px !important;
-  }
+/* Затемнение всего экрана */
+.theme-mobile__menu.show::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
 }
 
-/* ============ МОБИЛЬНЫЙ КАЛЕНДАРЬ – КОМПАКТНЫЙ ============ */
-@media (max-width: 768px) {
-  /* Уменьшаем сетку и ячейки */
-  .calendar-days {
-    gap: 4px !important;
-  }
-  
-  .calendar-day {
-    min-height: 70px !important;
-    padding: 4px !important;
-    border-radius: 10px !important;
-  }
-  
-  .calendar-day-number {
-    font-size: 10px !important;
-    margin-bottom: 4px !important;
-  }
-  
-  .calendar-items {
-    gap: 2px !important;
-  }
-  
-  .calendar-item {
-    padding: 2px 4px !important;
-    font-size: 9px !important;
-    gap: 3px !important;
-    border-left-width: 2px !important;
-  }
-  
-  .calendar-item .item-icon {
-    font-size: 8px !important;
-  }
-  
-  .calendar-item .item-title {
-    font-size: 8px !important;
-    max-width: 50px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .published-badge {
-    font-size: 7px !important;
-    padding: 0px 3px !important;
-  }
-  
-  .calendar-more {
-    font-size: 8px !important;
-    padding: 2px !important;
-  }
-  
-  /* Заголовки недели компактнее */
-  .weekday {
-    font-size: 9px !important;
-    padding: 4px !important;
-  }
-  
-  /* Кнопки навигации календаря меньше */
-  .calendar-nav-btn {
-    width: 28px !important;
-    height: 28px !important;
-    font-size: 11px !important;
-  }
-  
-  .calendar-month-title {
-    font-size: 14px !important;
-  }
-  
-  .calendar-today-btn {
-    padding: 4px 10px !important;
-    font-size: 10px !important;
-  }
+/* Опускаем все остальные элементы */
+.topbar,
+.sidebar,
+.main,
+.modal-root,
+.modal-backdrop,
+.modal-content,
+#modal-root,
+.notification-container {
+  z-index: auto !important;
 }
 
-/* ============ ТЕКСТ ПОСТОВ В КАЛЕНДАРЕ – ВИДИМЫЙ ============ */
-/* Основной цвет текста для элементов календаря (перекрываем возможные темы) */
-.calendar-item,
-.calendar-item .item-title,
-.calendar-item .item-icon,
-.calendar-item .published-badge {
-  color: #1e293b !important; /* тёмно-серый, почти чёрный */
-}
-
-/* Если элемент опубликован – делаем текст серым, но всё ещё читаемым */
-.calendar-item.published,
-.calendar-item.published .item-title,
-.calendar-item.published .item-icon {
-  color: #475569 !important;
-  text-decoration: line-through;
-}
-
-/* Сам фон ячейки оставляем светлым, но если он где-то белый – текст не сольётся */
-.calendar-day {
-  background: #ffffff !important;
-}
-
-/* Для пустых ячеек фон чуть серый */
-.calendar-day.empty {
-  background: #f8fafc !important;
-}
-
-/* Дополнительно: на случай тёмной темы (если вдруг есть) – принудительно светлый фон для календаря */
-.calendar-day,
-.calendar-item {
-  background-color: #ffffff;
-}
-
-.calendar-item {
-  background: #f1f5f9 !important;
-}
-
-/* Показываем текст постов в календаре на мобилках */
-@media (max-width: 768px) {
-  .calendar-item .item-title {
-    display: block !important;        /* возвращаем текст */
-    font-size: 9px !important;
-    max-width: 55px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  /* Чтобы строка не была слишком высокой, можно ограничить */
-  .calendar-item {
-    flex-wrap: nowrap;
-    min-width: 0;
-  }
-}
-
-
-@media (max-width: 768px) {
-  .calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(42px, 1fr)); /* минимальная ширина 42px */
-    gap: 3px;
-    overflow-x: auto;  /* если всё же не влезает — будет скролл, но обычно влезает */
-  }
-  
-  .calendar-day {
-    min-height: 65px;
-    padding: 4px;
-  }
-  
-  .calendar-day-number {
-    font-size: 9px;
-  }
-}
-
-/* PWA Install button – только на мобилках */
-.pwa-install-mobile {
-  display: none;
-}
-@media (max-width: 768px) {
-  .pwa-install-mobile {
-    display: block;
-  }
+/* Кнопка вызова меню */
+#btn-theme-mobile {
+  position: relative;
+  z-index: 10;
 }

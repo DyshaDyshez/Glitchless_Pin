@@ -1,24 +1,40 @@
 {
-    "name": "Glitchless Pin",
-    "short_name": "Glitchless Pin",
-    "description": "AI генератор постов для социальных сетей",
-    "icons": [
-        {
-            "src": "img/web-app-manifest-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "img/web-app-manifest-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
-        }
-    ],
-    "theme_color": "#667eea",
-    "background_color": "#ffffff",
-    "display": "standalone",
-    "start_url": "/",
-    "scope": "/"
+  "name": "Glitchless Pin",
+  "short_name": "GlitchPin",
+  "description": "AI генератор постов для социальных сетей",
+  "icons": [
+    {
+      "src": "img/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "img/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#667eea",
+  "background_color": "#f8fafc",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/",
+  "orientation": "portrait-primary",
+  "lang": "ru",
+  "categories": ["productivity", "social", "business"],
+  "prefer_related_applications": false
 }

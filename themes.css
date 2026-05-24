@@ -281,39 +281,6 @@ body {
     transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Переключатель тем */
-.theme-switcher {
-    position: relative;
-    display: flex;
-    gap: 8px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    margin-top: 16px;
-}
-
-.theme-btn {
-    flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: all 0.2s;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.theme-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.theme-btn.active {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
 
 /* Дополнительная читаемость для тёмной темы */
 [data-theme="dark"] .calendar-day,
@@ -351,3 +318,4 @@ body {
     color: var(--text-primary);
     border-color: var(--border-color);
 }
+

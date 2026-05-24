@@ -1,124 +1,133 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  
   <!-- ===== FAVICON ===== -->
-<!-- Основной favicon -->
-<link rel="icon" type="image/x-icon" href="img/favicon.ico">
-<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-<link rel="icon" type="image/png" sizes="96x96" href="img/favicon-96x96.png">
-
-<!-- Apple Touch Icon для iOS -->
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-
-<!-- Android Chrome Web App Manifest -->
-<link rel="manifest" href="img/site.webmanifest">
-
-<!-- Цвет темы для браузеров -->
-<meta name="theme-color" content="#667eea">
-<meta name="msapplication-TileColor" content="#667eea">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Glitchless Pin">
-
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="img/favicon-96x96.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="img/site.webmanifest">
+  
+  <meta name="theme-color" content="#667eea">
+  <meta name="msapplication-TileColor" content="#667eea">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Glitchless Pin">
   
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Glitchless Pin — AI Генератор постов</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="themes.css">
-  <link rel="stylesheet" href="second_theme.css">
-  <link rel="stylesheet" href="moon_theme.css">
-  <link rel="stylesheet" href="comfort_theme.css">
-  <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-  (function(m,e,t,r,i,k,a){
-      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-      m[i].l=1*new Date();
-      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-  })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109378166', 'ym');
-
-  ym(109378166, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/109378166" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-<!-- Добавь в <head> -->
-<meta name="description" content="Glitchless Pin - AI генератор постов для социальных сетей. Создавайте качественный контент для Pinterest, Instagram, Telegram и блогов за секунды.">
-<meta name="keywords" content="AI генератор постов, контент для Pinterest, Instagram посты, Telegram каналы, SMM, контент-план">
-<meta name="author" content="Glitchless Pin">
-<meta name="robots" content="index, follow">
-<meta name="googlebot" content="index, follow">
-
-<!-- Open Graph для соцсетей -->
-<meta property="og:title" content="Glitchless Pin - AI Генератор постов">
-<meta property="og:description" content="Создавайте качественные посты для соцсетей с помощью искусственного интеллекта">
-<meta property="og:image" content="https://glitchless-pin.web.app/og-image.png">
-<meta property="og:url" content="https://glitchless-pin.web.app">
-<meta property="og:type" content="website">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Glitchless Pin - AI Генератор постов">
-<meta name="twitter:description" content="AI помощник для создания контента в социальных сетях">
-<meta name="twitter:image" content="https://glitchless-pin.web.app/twitter-image.png">
-
-<!-- Canonical URL -->
-<link rel="canonical" href="https://glitchless-pin.web.app/">
   
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109378166', 'ym');
+    ym(109378166, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/109378166" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  
+  <meta name="description" content="Glitchless Pin - AI генератор постов для социальных сетей. Создавайте качественный контент для Pinterest, Instagram, Telegram и блогов за секунды.">
+  <meta name="keywords" content="AI генератор постов, контент для Pinterest, Instagram посты, Telegram каналы, SMM, контент-план">
+  <meta name="author" content="Glitchless Pin">
+  <meta name="robots" content="index, follow">
+  
+  <meta property="og:title" content="Glitchless Pin - AI Генератор постов">
+  <meta property="og:description" content="Создавайте качественные посты для соцсетей с помощью искусственного интеллекта">
+  <meta property="og:image" content="https://glitchless-pin.web.app/og-image.png">
+  <meta property="og:url" content="https://glitchless-pin.web.app">
+  <meta property="og:type" content="website">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Glitchless Pin - AI Генератор постов">
+  <meta name="twitter:description" content="AI помощник для создания контента в социальных сетях">
+  
+  <link rel="canonical" href="https://glitchless-pin.web.app/">
 </head>
 <body>
-  <div class="app-shell h-full">
+  <div class="app-shell">
     <!-- Sidebar -->
     <aside class="sidebar">
-     <div class="sidebar__brand">
-    <img src="img/GlitchLess Pin 90-90.png" alt="Glitchless Pin Logo" class="sidebar__logo-img">
-    <div>
-        <div class="sidebar__title">Glitchless Pin</div>
-        <div class="sidebar__subtitle">AI генератор постов</div>
-    </div>
-</div>
+      <div class="sidebar__brand">
+        <img src="img/GlitchLess Pin 90-90.png" alt="Glitchless Pin Logo" class="sidebar__logo-img">
+        <div>
+          <div class="sidebar__title">Glitchless Pin</div>
+          <div class="sidebar__subtitle">AI генератор постов</div>
+        </div>
+      </div>
 
       <nav class="sidebar__nav">
         <button class="navlink" data-page="planner">
           <i class="fa-regular fa-pen-to-square"></i>
-          <span> Планирование</span>
+          <span>Планирование</span>
         </button>
         <button class="navlink" data-page="templates">
           <i class="fa-regular fa-heart"></i>
-          <span> Шаблоны</span>
+          <span>Шаблоны</span>
           <span id="templates-badge" class="ml-auto text-xs bg-white/20 px-1.5 py-0.5 rounded-full">0</span>
         </button>
         <button class="navlink" data-page="calendar">
           <i class="fa-regular fa-calendar"></i>
-          <span> Календарь</span>
+          <span>Календарь</span>
         </button>
         <button class="navlink" data-page="statistics">
           <i class="fa-solid fa-chart-line"></i>
-          <span> Статистика</span>
+          <span>Статистика</span>
         </button>
         <button class="navlink" data-page="account">
           <i class="fa-regular fa-user"></i>
-          <span> Аккаунт</span>
+          <span>Аккаунт</span>
         </button>
       </nav>
 
       <div class="sidebar__footer">
         <div class="status-badge">
           <span class="status-dot status-dot--ok"></span>
-          <span> AI активен</span>
+          <span>AI активен</span>
         </div>
-        <div class="flex gap-2">
-          <button id="btn-export-json" class="btn btn--ghost btn-sm flex-1">
-            <i class="fa-regular"></i> JSON
+<!-- Mobile "Add to Home Screen" button -->
+<div id="pwa-install-container" class="pwa-install-mobile" style="display: none;">
+  <button id="btn-install-pwa" class="btn btn--ghost btn-sm">
+    <i class="fa-solid fa-mobile-screen-button"></i> Установить
+  </button>
+</div>
+        <!-- Mobile theme switcher -->
+        <div class="theme-mobile">
+          <div class="theme-mobile__wrap">
+            <button id="btn-theme-mobile" class="btn btn--ghost btn-sm theme-mobile__btn" type="button" aria-haspopup="menu" aria-expanded="false">
+              <span class="theme-mobile__icon" aria-hidden="true">🎨</span>
+              <span class="theme-mobile__text">Тема</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+            <div id="theme-mobile-menu" class="theme-mobile__menu" role="menu" aria-hidden="true">
+              <button class="theme-mobile__item" type="button" data-theme="light" role="menuitemradio" aria-checked="false">🌞 Светлая</button>
+              <button class="theme-mobile__item" type="button" data-theme="dark" role="menuitemradio" aria-checked="false">🌙 Тёмная</button>
+              <button class="theme-mobile__item" type="button" data-theme="moon" role="menuitemradio" aria-checked="false">🌘 Лунная ночь</button>
+              <button class="theme-mobile__item" type="button" data-theme="green" role="menuitemradio" aria-checked="false">🌸 Розовая</button>
+              <button class="theme-mobile__item" type="button" data-theme="comfort" role="menuitemradio" aria-checked="false">🌿 Комфортная</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export buttons  нахуй эти кнопочки
+        <div class="flex gap-2 flex-wrap">
+          <button id="btn-export-json" class="btn btn--ghost btn-sm">
+            <i class="fa-regular fa-file-code"></i> JSON
           </button>
-          <button id="btn-generate-excel" class="btn btn--ghost btn-sm flex-1">
+          <button id="btn-generate-excel" class="btn btn--ghost btn-sm">
             <i class="fa-regular fa-file-excel"></i> Excel
           </button>
-        </div>
-      </div>
+        </div> -->
+      </div> 
     </aside>
 
     <!-- Main -->
@@ -131,7 +140,6 @@
         </div>
         <div class="topbar__right">
           <button id="btn-generate-auto" class="btn btn--primary">
-            <i class="fa-regular"></i>
             🎲 Авто-идеи
           </button>
         </div>
@@ -188,7 +196,7 @@
 
                   <div class="flex gap-2">
                     <button id="btn-generate-idea" class="btn btn--primary flex-1">
-                      <i class="fa-regular"></i> 🚀 Сгенерировать пост
+                      🚀 Сгенерировать пост
                     </button>
                     <button id="btn-save-idea" class="btn btn--secondary">
                       <i class="fa-regular fa-floppy-disk"></i> Сохранить
@@ -214,9 +222,6 @@
                   <div class="panel-subtitle">Скопируйте и публикуйте!</div>
                 </div>
                 <div class="flex gap-2">
-                  <button id="btn-add-hashtags" class="btn btn--ghost btn-sm">
-                    <i class="fa-regular fa-hashtag"></i> Хэштеги
-                  </button>
                   <button id="btn-copy-post" class="btn btn--ghost btn-sm">
                     <i class="fa-regular fa-copy"></i> Копировать
                   </button>
@@ -250,10 +255,10 @@
                     <span>📝 Текст поста</span>
                     <div class="flex gap-2">
                       <button id="btn-edit-post" class="text-xs text-indigo-600 hover:text-indigo-800">
-                        <i class="fa-regular"></i> Редактировать
+                        <i class="fa-regular fa-pen-to-square"></i> Редактировать
                       </button>
                       <button id="btn-regenerate-post" class="text-xs text-orange-600 hover:text-orange-800">
-                        <i class="fa-regular"></i> Перегенерировать
+                        <i class="fa-regular fa-rotate-right"></i> Перегенерировать
                       </button>
                     </div>
                   </div>
@@ -268,22 +273,20 @@
       <!-- Страница: Шаблоны -->
       <section id="page-templates" class="page hidden flex-1 min-h-0">
         <div class="h-full p-4">
-            <div class="rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur h-full flex flex-col">
-                <div class="panel-header flex-shrink-0">
-                    <div>
-                        <div class="panel-title">⭐ Избранные шаблоны</div>
-                        <div class="panel-subtitle">Ваши посты сохраняются в облако</div>
-                    </div>
-                </div>
-                <!-- 👇 ДОБАВЬ ЭТУ СТРОКУ -->
-                <div id="templates-filters" class="flex-shrink-0"></div>
-                <!-- 👆 КОНЕЦ ДОБАВЛЕНИЯ -->
-                <div class="flex-1 overflow-y-auto p-4">
-                    <div id="templates-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                </div>
+          <div class="rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur h-full flex flex-col">
+            <div class="panel-header flex-shrink-0">
+              <div>
+                <div class="panel-title">⭐ Избранные шаблоны</div>
+                <div class="panel-subtitle">Ваши посты сохраняются в облако</div>
+              </div>
             </div>
+            <div id="templates-filters" class="flex-shrink-0"></div>
+            <div class="flex-1 overflow-y-auto p-4">
+              <div id="templates-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+          </div>
         </div>
-    </section>
+      </section>
 
       <!-- Страница: Календарь -->
       <section id="page-calendar" class="page hidden flex-1 min-h-0">
@@ -302,7 +305,7 @@
           <div class="rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur">
             <div class="panel-header">
               <div>
-                <div class="panel-title"> Статистика</div>
+                <div class="panel-title">📊 Статистика</div>
                 <div class="panel-subtitle">Аналитика вашего контента</div>
               </div>
             </div>
@@ -328,13 +331,13 @@
           <div class="rounded-2xl shadow-sm border border-slate-200 bg-white/80 backdrop-blur">
             <div class="panel-header">
               <div>
-                <div class="panel-title"> Аккаунт</div>
+                <div class="panel-title">👤 Аккаунт</div>
                 <div class="panel-subtitle">Настройки и информация</div>
               </div>
             </div>
             <div class="p-4">
               <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                <i class="fa-regular fa-info-circle"></i>  Шаблоны хранятся в облаке Firebase. API ключ тоже в Firebase.
+                <i class="fa-regular "></i> Пока все полностью бесплатно! Наслаждайтесь сервисом ♥
               </div>
             </div>
           </div>
@@ -351,6 +354,11 @@
     <div id="modal-backdrop" class="modal-backdrop"></div>
     <div id="modal-content" class="modal-content" role="dialog" aria-modal="true"></div>
   </div>
+
+
+
+
+
 
   <!-- Firebase SDK -->
   <script type="importmap">
@@ -378,7 +386,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    // Загружаем API ключ из Firestore
     try {
       const configDoc = await getDoc(doc(db, 'config', 'api'));
       if (configDoc.exists()) {
@@ -393,7 +400,6 @@
       window.OPENROUTER_API_KEY = null;
     }
     
-    // Делаем Firebase функции глобальными для основного скрипта
     window.db = db;
     window.firebaseCollection = collection;
     window.firebaseDoc = doc;
@@ -407,5 +413,10 @@
 
   <!-- Основной скрипт -->
   <script type="module" src="script.js"></script>
+
+
+
+
+
 </body>
 </html>
