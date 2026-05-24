@@ -2780,165 +2780,6 @@ body, .main, .page {
   }
 }
 
-/* ============ ЕДИНСТВЕННОЕ ПРАВИЛЬНОЕ МЕНЮ ТЕМ ============ */
-.theme-mobile {
-  position: relative;
-}
-
-.theme-mobile__btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  cursor: pointer;
-}
-.theme-mobile__btn i {
-  font-size: 10px;
-  transition: transform 0.2s;
-}
-.theme-mobile__btn[aria-expanded="true"] i {
-  transform: rotate(180deg);
-}
-
-/* ПК: меню над кнопкой */
-.theme-mobile__menu {
-  position: absolute !important;
-  bottom: 100% !important;
-  left: 0 !important;
-  top: auto !important;
-  right: auto !important;
-  transform: none !important;
-  width: 200px !important;
-  background: #1e293b !important;
-  border-radius: 12px !important;
-  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3) !important;
-  display: none !important;
-  flex-direction: column !important;
-  margin-bottom: 8px !important;
-  overflow: hidden !important;
-}
-
-/* Мобилки: меню по центру */
-@media (max-width: 768px) {
-  .theme-mobile__menu {
-    position: fixed !important;
-    bottom: auto !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 220px !important;
-    margin-bottom: 0 !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
-  }
-  .theme-mobile__menu.show::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: -1;
-  }
-}
-
-.theme-mobile__menu.show {
-  display: flex !important;
-}
-
-.theme-mobile__item {
-  padding: 12px 16px !important;
-  background: transparent !important;
-  border: none !important;
-  text-align: left !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  color: white !important;
-  transition: background 0.2s ease !important;
-}
-.theme-mobile__item:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-}
-.theme-mobile__item[aria-checked="true"] {
-  background: #6366f1 !important;
-  color: white !important;
-}
-
-/* Скрываем старый десктопный переключатель из themes.css */
-.theme-switcher {
-  display: none !important;
-}
-
-/* Обработка клавиатуры на мобилках */
-@media (max-width: 768px) {
-  body.keyboard-open {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-  }
-  body.keyboard-open .main {
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  .input:focus, textarea:focus, .form-input:focus {
-    scroll-margin-top: 80px;
-  }
-}
-
-.theme-mobile__menu {
-  z-index: 1100; /* выше модалок */
-}
-
-@media (max-width: 768px) {
-  .theme-mobile__menu.show::before {
-    content: '';
-    position: fixed;   /* вместо относительного */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: -1;       /* остаётся под меню, но над всем остальным */
-  }
-}
-
-/* Исправленное меню тем на мобилках — под кнопкой */
-@media (max-width: 768px) {
-  .theme-mobile {
-    position: relative;
-  }
-  
-  .theme-mobile__menu {
-    position: absolute !important;
-    top: calc(100% + 5px) !important;
-    left: 0 !important;
-    right: auto !important;
-    transform: none !important;
-    width: 180px !important;
-    background: #1e293b !important;
-    border-radius: 12px !important;
-    z-index: 9999 !important;
-    display: none !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-  }
-  
-  .theme-mobile__menu.show {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  
-  .theme-mobile__menu::before {
-    display: none !important; /* убираем полноэкранное затемнение */
-  }
-  
-  .theme-mobile__item {
-    padding: 12px 16px !important;
-  }
-}
 
 /* ============ МОБИЛЬНЫЙ КАЛЕНДАРЬ – КОМПАКТНЫЙ ============ */
 @media (max-width: 768px) {
@@ -3095,5 +2936,84 @@ body, .main, .page {
 @media (max-width: 768px) {
   .pwa-install-mobile {
     display: block;
+  }
+}
+
+/* ============ МЕНЮ ТЕМ (ФИНАЛЬНАЯ РАБОЧАЯ ВЕРСИЯ) ============ */
+.theme-mobile {
+  position: relative;
+}
+
+.theme-mobile__btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.theme-mobile__btn i {
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.theme-mobile__btn[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+
+/* Меню на десктопе — над кнопкой, выровнено влево */
+.theme-mobile__menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 200px;
+  background: #1e293b;
+  border-radius: 12px;
+  display: none;
+  flex-direction: column;
+  z-index: 9999;
+  margin-bottom: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.theme-mobile__menu.show {
+  display: flex;
+}
+
+.theme-mobile__item {
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s ease;
+}
+
+.theme-mobile__item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-mobile__item[aria-checked="true"] {
+  background: #6366f1;
+  color: white;
+}
+
+/* Мобилки: меню ПОД кнопкой, выровнено по ПРАВОМУ краю */
+@media (max-width: 768px) {
+  .theme-mobile__menu {
+    bottom: auto;
+    top: calc(100% + 5px);
+    left: auto;
+    right: 0;
+    margin-bottom: 0;
   }
 }
