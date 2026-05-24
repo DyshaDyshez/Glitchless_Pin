@@ -1318,9 +1318,6 @@ if (installBtn) {
 
 
 
-
-
-
 // ============ ИНИЦИАЛИЗАЦИЯ ============
 async function init() {
     appState = loadState();
