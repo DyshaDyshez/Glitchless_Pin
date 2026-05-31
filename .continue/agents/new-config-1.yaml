@@ -1,0 +1,27 @@
+models:
+  - name: Qwen 2.5 Coder 32B (Free)
+    provider: openrouter
+    model: qwen/qwen-2.5-coder-32b-instruct:free
+    apiKey: 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
+    contextWindowSize: 32768
+    template: chatml
+
+  - name: Llama 3.1 8B (Fast Free)
+    provider: openrouter
+    model: meta-llama/llama-3.1-8b-instruct:free
+    apiKey: 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
+    contextWindowSize: 8192
+
+tabAutocompleteModel:
+  name: Qwen 2.5 Coder Autocomplete
+  provider: openrouter
+  model: qwen/qwen-2.5-coder-32b-instruct:free
+  apiKey: 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
+
+customCommands:
+  - name: explain
+    prompt: "Объясни этот код простыми словами."
+  - name: optimize
+    prompt: "Оптимизируй этот код для производительности."
+
+analyticsEnabled: false
