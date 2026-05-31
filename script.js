@@ -1321,47 +1321,20 @@ if (installBtn) {
 // ============ ИНИЦИАЛИЗАЦИЯ ============
 async function init() {
     appState = loadState();
-    
-    let retries = 0;
-    while (!window.db && retries < 10) {
-        await new Promise(r => setTimeout(r, 500));
-        retries++;
-        console.log(`⏳ Ожидание Firebase... попытка ${retries}`);
-    }
-    
-    if (window.db) {
-        try {
-            console.log('☁️ Загружаем шаблоны из Firebase...');
-            const templatesCollection = window.firebaseCollection(window.db, 'templates');
-            const querySnapshot = await window.firebaseGetDocs(templatesCollection);
-            
-            const cloudTemplates = [];
-            querySnapshot.forEach((doc) => {
-                cloudTemplates.push({ id: doc.id, ...doc.data() });
-            });
-            
-            const existingIds = new Set(appState.templates.map(t => t.id));
-            cloudTemplates.forEach(template => {
-                if (!existingIds.has(template.id)) {
-                    appState.templates.push(template);
-                }
-            });
-            
-            saveState();
-        } catch (error) {
-            console.error('❌ Ошибка загрузки шаблонов из Firebase:', error);
-        }
-    }
-    
+
+    // Применяем тему максимально рано (до ожидания Firebase), чтобы не было «скачка» стилей.
+    initThemeSwitcher();
+
+    // UI рендерим сразу по локальному state.
     initKeyboardHandling();
-    
+
     window.generateAutoIdeas = generateAutoIdeas;
     window.closeModal = closeModal;
-    
-    document.querySelectorAll('.navlink[data-page]').forEach(btn => 
+
+    document.querySelectorAll('.navlink[data-page]').forEach(btn =>
         btn.addEventListener('click', () => setActivePage(btn.getAttribute('data-page')))
     );
-    
+
     document.getElementById('btn-generate-auto')?.addEventListener('click', openAutoGenerateModal);
     document.getElementById('btn-generate-idea')?.addEventListener('click', () => {
         const topic = document.getElementById('idea-topic')?.value.trim();
@@ -1383,33 +1356,69 @@ async function init() {
     document.getElementById('btn-regenerate-post')?.addEventListener('click', regeneratePost);
     document.getElementById('btn-export-json')?.addEventListener('click', exportToJSON);
     document.getElementById('btn-generate-excel')?.addEventListener('click', exportToExcel);
-    
+
     const prevBtn = document.getElementById('cal-prev-month');
     const nextBtn = document.getElementById('cal-next-month');
     const todayBtn = document.getElementById('cal-today');
-    
+
     if (prevBtn) prevBtn.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()-1); renderCalendar(); });
     if (nextBtn) nextBtn.addEventListener('click', () => { calCursor.setMonth(calCursor.getMonth()+1); renderCalendar(); });
     if (todayBtn) todayBtn.addEventListener('click', () => { calCursor = new Date(); renderCalendar(); });
-    
+
     if (document.getElementById('plan-date') && !document.getElementById('plan-date').value) 
         document.getElementById('plan-date').value = formatISODate(new Date());
-    
+
     document.querySelectorAll('.auto-resize').forEach(autoResize);
     const postOutput = document.getElementById('post-output');
     if (postOutput) postOutput.addEventListener('input', () => autoResize(postOutput));
-    
+
     renderIdeas();
     renderCalendar();
     renderTemplates();
     updateStats();
     updateLikeButton();
     setActivePage('planner');
-    
-    initThemeSwitcher();
-    
-    showNotification('🎉 Glitchless Pin готов!', 'success');
+
+    // Firebase грузим параллельно, но UI уже должен быть виден.
+    (async () => {
+        let retries = 0;
+        while (!window.db && retries < 10) {
+            await new Promise(r => setTimeout(r, 500));
+            retries++;
+            console.log(`⏳ Ожидание Firebase... попытка ${retries}`);
+        }
+
+        if (!window.db) return;
+
+        try {
+            console.log('☁️ Загружаем шаблоны из Firebase...');
+            const templatesCollection = window.firebaseCollection(window.db, 'templates');
+            const querySnapshot = await window.firebaseGetDocs(templatesCollection);
+
+            const cloudTemplates = [];
+            querySnapshot.forEach((doc) => {
+                cloudTemplates.push({ id: doc.id, ...doc.data() });
+            });
+
+            const existingIds = new Set(appState.templates.map(t => t.id));
+            cloudTemplates.forEach(template => {
+                if (!existingIds.has(template.id)) {
+                    appState.templates.push(template);
+                }
+            });
+
+            saveState();
+
+            // Обновляем UI после подгрузки.
+            renderTemplates();
+            updateStats();
+            updateLikeButton();
+        } catch (error) {
+            console.error('❌ Ошибка загрузки шаблонов из Firebase:', error);
+        }
+    })();
 }
 
 document.addEventListener('DOMContentLoaded', init);
 window.closeModal = closeModal;
+
