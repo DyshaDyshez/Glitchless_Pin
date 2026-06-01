@@ -4,7 +4,22 @@ import { aiAnimation } from './modules/ai-animation.js';
 import { aiManager } from './modules/ai-models.js';
 
 
-
+// Плавный скролл к панели поста (только на мобилках)
+function scrollToPostPanel() {
+    // Только на мобилках (ширина экрана <= 768px)
+    if (window.innerWidth > 768) return;
+    
+    const postPanel = document.getElementById('post-panel');
+    if (postPanel) {
+      setTimeout(() => {
+        postPanel.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }, 100);
+    }
+  }
 
 const CONFIG = {
     LS_KEY: 'glitchless-pin-v3',
@@ -500,7 +515,10 @@ async function generatePostForIdea(ideaId, showInEditor = true) {
             document.getElementById('plan-date').value = idea.calendarDate || formatISODate(new Date());
             document.getElementById('plan-notes').value = idea.notes || '';
             updateLikeButton();
-        }
+            
+            // Плавный скролл к посту на мобилках
+            scrollToPostPanel();
+          }
         
         // ЗАВЕРШАЕМ АНИМАЦИЮ
         aiAnimation.finish();
@@ -612,20 +630,23 @@ function renderIdeas() {
     
     container.querySelectorAll('.idea-btn-view').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const id = btn.getAttribute('data-view-id');
-            const idea = appState.ideas.find(i => i.id === id);
-            if (idea && idea.postText) {
-                currentIdeaId = id;
-                document.getElementById('post-output').value = idea.postText;
-                autoResize(document.getElementById('post-output'));
-                document.getElementById('plan-date').value = idea.calendarDate || formatISODate(new Date());
-                document.getElementById('plan-notes').value = idea.notes || '';
-                updateLikeButton();
-                showNotification('📄 Пост загружен в редактор', 'success');
-            }
+          e.stopPropagation();
+          const id = btn.getAttribute('data-view-id');
+          const idea = appState.ideas.find(i => i.id === id);
+          if (idea && idea.postText) {
+            currentIdeaId = id;
+            document.getElementById('post-output').value = idea.postText;
+            autoResize(document.getElementById('post-output'));
+            document.getElementById('plan-date').value = idea.calendarDate || formatISODate(new Date());
+            document.getElementById('plan-notes').value = idea.notes || '';
+            updateLikeButton();
+            showNotification('📄 Пост загружен в редактор', 'success');
+            
+            // Добавь эту строку
+            scrollToPostPanel();
+          }
         });
-    });
+      });
     
     container.querySelectorAll('.idea-btn-delete').forEach(btn => {
         btn.addEventListener('click', (e) => { 
@@ -1160,17 +1181,20 @@ function editPost() {
 
 async function regeneratePost() {
     if (!currentIdeaId) { 
-        showNotification('❌ Нет активного поста', 'warning'); 
-        return; 
+      showNotification('❌ Нет активного поста', 'warning'); 
+      return; 
     }
     const confirmed = await customConfirm('🔄 Перегенерировать пост? Текущий текст будет заменён.', 'Перегенерация');
     if (confirmed) {
-        const postOutput = document.getElementById('post-output');
-        postOutput.value = '⏳ Генерация нового текста...';
-        autoResize(postOutput);
-        await generatePostForIdea(currentIdeaId, true);
+      const postOutput = document.getElementById('post-output');
+      postOutput.value = '⏳ Генерация нового текста...';
+      autoResize(postOutput);
+      await generatePostForIdea(currentIdeaId, true);
+      
+      // Добавь эту строку
+      scrollToPostPanel();
     }
-}
+  }
 
 async function addEmptyIdea() {
     const topic = await customPrompt('📝 Введите тему поста:', '', 'Новая идея');

@@ -102,7 +102,7 @@ body {
 
 .navlink:hover {
   background: rgba(226, 232, 240, 0.12);
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 
 .sidebar__footer {
@@ -253,7 +253,7 @@ body {
 
 /* Inputs */
 .label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: rgba(15, 23, 42, 0.7);
   display: block;
@@ -2631,9 +2631,9 @@ body, .main, .page {
     display: none;
   }
   
-  .theme-mobile__text {
+  /* .theme-mobile__text {
     display: none;
-  }
+  } */
   
   .theme-mobile__btn {
     padding: 6px 8px !important;
@@ -2647,7 +2647,7 @@ body, .main, .page {
     padding: 6px 12px !important;
     gap: 8px !important;
     min-height: auto !important;
-    height: auto !important;
+    height: 55px !important;
     flex-wrap: wrap !important;
   }
   
@@ -2736,7 +2736,7 @@ body, .main, .page {
   
   .sidebar__logo-img {
     width: 28px !important;
-    height: 28px !important;
+    height: 49px !important;
   }
   
   .sidebar__title {
@@ -2764,9 +2764,9 @@ body, .main, .page {
     display: none !important;
   }
   
-  .theme-mobile__text {
+  /* .theme-mobile__text {
     display: none !important;
-  }
+  } */
   
   .theme-mobile__btn {
     padding: 5px 8px !important;
@@ -3187,12 +3187,6 @@ body, .main, .page {
   transform: scale(1.02);
 }
 
-/* Дополнительные настройки генерации */
-.generation-settings {
-  margin-top: 16px;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 12px;
-}
 
 .settings-header {
   display: flex;
@@ -3355,7 +3349,7 @@ body, .main, .page {
 }
 
 .settings-toggle:hover {
-  background: #f1f5f9;
+  background: #05e0f62b;
   color: #667eea;
 }
 
@@ -3400,7 +3394,7 @@ body, .main, .page {
 }
 
 .settings-toggle.open {
-  background: #f4f9ff;
+  background: #00fff324;
   border-bottom: 1px solid #b8d7ff;
 }
 
@@ -3691,7 +3685,8 @@ body, .main, .page {
 /* ===== КОМПАКТНЫЕ НАСТРОЙКИ ===== */
 .generation-settings {
   margin-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #549eff;
+  background-color: #549eff;
 }
 
 .settings-toggle {
@@ -3742,12 +3737,14 @@ body, .main, .page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px;
-  background: #f8fafc;
+  padding: 9px;
+  background: #001cff36;
   border-radius: 10px;
   font-size: 12px;
   font-weight: 500;
   color: #1e293b;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 /* Компактный toggle */
@@ -3804,7 +3801,7 @@ body, .main, .page {
   font-size: 11px;
   background: white;
   cursor: pointer;
-  width: 100px;
+  width: auto;
 }
 
 /* Левая панель - ограничиваем высоту и добавляем скролл */
@@ -3817,3 +3814,119 @@ body, .main, .page {
 .panel-header {
   padding: 12px 16px;
 }
+
+/* Theme menu (fixed - over everything) */
+.theme-mobile {
+  position: relative;
+}
+.theme-mobile__btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.theme-mobile__btn i {
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+.theme-mobile__btn[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+.theme-mobile__menu {
+  position: fixed;
+  bottom: auto;
+  top: 46px;
+  right: 8px;
+  left: auto;
+  width: 200px;
+  background: #1e293b;
+  border-radius: 12px;
+  display: none;
+  flex-direction: column;
+  z-index: 999999;
+  margin-bottom: 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.theme-mobile__menu.show {
+  display: flex;
+}
+.theme-mobile__item {
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s;
+}
+.theme-mobile__item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.theme-mobile__item[aria-checked="true"] {
+  background: #6366f1;
+}
+
+@media (max-width: 768px) {
+  .theme-mobile__menu {
+    position: fixed;
+    bottom: auto;
+    top: 54px;
+    right: 10px;
+    left: auto;
+    width: 200px;
+    background: #1e293b;
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    z-index: 999999;
+    margin-bottom: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    overflow: hidden;      /* меню ПОД кнопкой */
+  }
+}
+
+/* Для ПК (от 769px) */
+@media (min-width: 769px) {
+  .theme-mobile__menu {
+    position: absolute;
+    bottom: auto;
+    top: -185px;
+    right: 28px;
+    left: auto;
+    width: 200px;
+    background: #1e293b;
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    z-index: 999999;
+    margin-bottom: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    overflow: hidden;     /* меню НАД кнопкой */
+  }
+}
+
+/* Альтернативный вариант через grid (более плавный) */
+.settings-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease-out;
+}
+
+.settings-body:not(.hidden) {
+  grid-template-rows: 1fr;
+}
+
+.settings-body > * {
+  overflow: hidden;
+}
+
