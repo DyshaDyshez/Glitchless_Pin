@@ -1431,12 +1431,13 @@ const settingsBody = document.getElementById('settings-body');
 
 if (settingsToggle && settingsBody) {
     settingsToggle.addEventListener('click', () => {
+        // Важно: hidden — это класс, а не aria/стейт. Снимаем/ставим именно его.
         settingsBody.classList.toggle('hidden');
         settingsToggle.classList.toggle('open');
-        
-        // Сохраняем состояние в localStorage
+
+        // Сохраняем состояние в localStorage (строками, чтобы сравнение === 'true' работало всегда)
         const isOpen = !settingsBody.classList.contains('hidden');
-        localStorage.setItem('settings-open', isOpen);
+        localStorage.setItem('settings-open', String(isOpen));
     });
     
     // Восстанавливаем состояние из localStorage
