@@ -13,20 +13,18 @@
 - 📅 **Календарь контента** — планирование постов по датам
 - 🎯 **Воронка контента** — распределение по типам: Экспертность / Польза / Продажа
 - 💾 **Автосохранение** — данные сохраняются в браузере
-- 📥 **Экспорт JSON** — выгрузка контент-плана для интеграции
-- ⌨️ **Горячие клавиши** — Ctrl+N новая строка, Ctrl+S сохранить
 - 📱 **Адаптивный дизайн** — работает на всех устройствах
 
 ## 🎥 Демо
 
-https://your-username.github.io/glitchless-pin/
+https://dyshadyshez.github.io/Glitchless_Pin/#planner
 
 ## 🛠 Технологии
 
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
 - **UI Framework**: Tailwind CSS
 - **AI**: Google Gemini (через OpenRouter API)
-- **Хранение**: LocalStorage (в планах Firebase)
+- **Хранение**: LocalStorage (в планах Firebase), внутри Firebase хранятся шаблоны. Можешь удалить (удаляются локально).
 - **Хостинг**: GitHub Pages / Firebase Hosting
 
 ## 🚀 Быстрый старт
@@ -40,3 +38,5 @@ cd glitchless-pin
 
 # Открываем в браузере
 open index.html
+
+Или скачай start_server.py , для локального запуска, на своем ПК, через локальный сервер.
