@@ -1,4 +1,11 @@
 // ============ КОНФИГУРАЦИЯ ============
+
+import { aiAnimation } from './modules/ai-animation.js';
+import { aiManager } from './modules/ai-models.js';
+
+
+
+
 const CONFIG = {
     LS_KEY: 'glitchless-pin-v3',
     USER_ID_KEY: 'glitchless-pin-user-id',
@@ -327,76 +334,136 @@ async function deleteTemplateFromFirebase(templateId) {
 }
 
 // ============ AI ГЕНЕРАЦИЯ ============
+// Функция получения настроек генерации
+function getGenerationSettings() {
+    return {
+        emojis: document.getElementById('setting-emojis')?.checked ?? true,
+        hashtags: document.getElementById('setting-hashtags')?.checked ?? true,
+        length: document.getElementById('setting-length')?.value ?? 'medium',
+        tone: document.getElementById('setting-tone')?.value ?? 'friendly'
+    };
+}
+
+// Функция получения текста правил для AI на основе настроек
+function getGenerationRules(settings) {
+    let rules = [];
+    
+    // Настройка эмодзи
+    if (settings.emojis) {
+        rules.push('- Используй эмодзи для вовлечения (2-4 штуки, уместно)');
+    } else {
+        rules.push('- НЕ используй эмодзи вообще, пиши обычным текстом');
+    }
+    
+    // Настройка хэштегов
+    if (settings.hashtags) {
+        rules.push('- В конце добавь 3-5 релевантных хэштегов');
+    } else {
+        rules.push('- НЕ добавляй хэштеги в конце поста');
+    }
+    
+    // Настройка длины
+    switch (settings.length) {
+        case 'short':
+            rules.push('- Длина поста: 300-500 символов (кратко и по делу)');
+            break;
+        case 'medium':
+            rules.push('- Длина поста: 500-800 символов (оптимально для соцсетей)');
+            break;
+        case 'long':
+            rules.push('- Длина поста: 800-1200 символов (развёрнуто, с примерами)');
+            break;
+        case 'xlong':
+            rules.push('- Длина поста: 1200-2000 символов (максимально подробно)');
+            break;
+    }
+    
+    // Настройка тона
+    switch (settings.tone) {
+        case 'friendly':
+            rules.push('- Тон: дружелюбный, разговорный, обращайся на "ты"');
+            break;
+        case 'professional':
+            rules.push('- Тон: профессиональный, экспертный, используй термины по теме');
+            break;
+        case 'humorous':
+            rules.push('- Тон: с юмором, ироничный, но не перебарщивай');
+            break;
+        case 'emotional':
+            rules.push('- Тон: эмоциональный, вдохновляющий, используй восклицания');
+            break;
+        case 'strict':
+            rules.push('- Тон: деловой, сухой, без воды, только факты');
+            break;
+    }
+    
+    return rules.join('\n');
+}
+
+// ОБНОВЛЕННАЯ функция generateAIPost
 async function generateAIPost(topic, direction, platform, details = '') {
     const API_KEY = window.OPENROUTER_API_KEY;
     if (!API_KEY) {
         throw new Error('API ключ не загружен. Проверьте Firestore (config/api)');
     }
     
+    // Получаем настройки пользователя
+    const settings = getGenerationSettings();
+    const customRules = getGenerationRules(settings);
+    
     const systemPrompt = `Ты профессиональный копирайтер. Напиши ГОТОВЫЙ ПОСТ для публикации.
+
 Тема: "${topic}"
 Платформа: ${platform}
 Направление: ${direction}
 ${details ? `Дополнительно: ${details}` : ''}
 
-ВАЖНЫЕ ПРАВИЛА:
+ПРАВИЛА НАПИСАНИЯ:
+${customRules}
+
+ОСНОВНЫЕ ТРЕБОВАНИЯ:
 1. Начни с цепляющего заголовка
-2. Используй эмодзи для вовлечения (но не перебарщивай)
-3. Разбей на короткие абзацы (по 1-2 предложения)
-4. Добавь призыв к действию
-5. В конце добавь 3-5 хэштегов
-6. НЕ используй markdown-разметку (звёздочки, решётки, подчёркивания)
-7. НЕ используй символы-разделители (***, ---, ___)
-8. Пиши чистым текстом, без форматирования`;
+2. !!!Разбей на короткие абзацы (по 1-2 предложения)
+3. Добавь призыв к действию
+4. Пиши чистым текстом, без markdown-разметки
+5. НЕ используй символы-разделители (***, ---, ___)`;
 
-    try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`,
-                'HTTP-Referer': window.location.href,
-                'X-Title': 'Glitchless Pin'
-            },
-            body: JSON.stringify({
-                model: 'google/gemini-2.0-flash-lite-001',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `Напиши пост на тему: "${topic}"` }
-                ],
-                temperature: 0.8,
-                max_tokens: 1500
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error?.message || `HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        let post = data.choices[0].message.content;
-        
-        post = post
-            .replace(/```\w*\n?/g, '')
-            .replace(/```/g, '')
-            .replace(/\*\*\*/g, '')
-            .replace(/---/g, '')
-            .replace(/___/g, '')
-            .replace(/\*\*/g, '')
-            .replace(/__/g, '')
-            .replace(/\*(?!\s)/g, '')
-            .replace(/_(?!\s)/g, '')
-            .replace(/#{1,6}\s/g, '')
-            .replace(/\n{3,}/g, '\n\n')
-            .trim();
-        
-        return post;
-        
-    } catch (error) {
-        console.error('AI Error:', error);
-        throw new Error(`Ошибка генерации: ${error.message}`);
+    const userPrompt = `Напиши пост на тему: "${topic}"`;
+    
+    // Используем умный менеджер с перебором моделей
+    const result = await aiManager.generateWithRetry(systemPrompt, userPrompt, API_KEY);
+    
+    if (!result.success) {
+        throw new Error(result.message);
     }
+    
+    // Постгенерационная обработка (на случай, если AI нарушил правила)
+    let post = result.text;
+    
+    // Если хэштеги выключены, но AI их добавил - удаляем (сохраняя структуру)
+if (!settings.hashtags) {
+    // Удаляем только строки с хэштегами, остальное оставляем
+    const lines = post.split('\n');
+    const filteredLines = lines.filter(line => {
+        // Проверяем, не состоит ли строка только из хэштегов и пробелов
+        const hashtagsOnly = line.replace(/#[\wа-яё]+/gi, '').replace(/\s/g, '').length === 0;
+        return !hashtagsOnly;
+    });
+    post = filteredLines.join('\n');
+    
+    // Дополнительная чистка: удаляем одиночные хэштеги в тексте
+    post = post.replace(/#[\wа-яё]+/g, '');
+    
+    // Убираем лишние пробелы, но сохраняем переносы строк
+    post = post.replace(/[ \t]+/g, ' ').trim();
+}
+    
+    // Если эмодзи выключены, но AI их добавил - удаляем
+    if (!settings.emojis) {
+        post = post.replace(/[\u{1F600}-\u{1F6FF}]/gu, '').trim();
+    }
+    
+    return post;
 }
 
 async function generatePostForIdea(ideaId, showInEditor = true) {
@@ -405,37 +472,66 @@ async function generatePostForIdea(ideaId, showInEditor = true) {
         showNotification('❌ Идея не найдена', 'error');
         return;
     }
+    
     const btn = document.querySelector(`[data-generate-id="${ideaId}"]`);
     const originalHTML = btn?.innerHTML;
+    
+    // ЗАПУСКАЕМ АНИМАЦИЮ
+    if (showInEditor) {
+        aiAnimation.start();
+    }
+    
     if (btn) {
         btn.disabled = true;
         btn.innerHTML = '⏳ Генерация...';
     }
+    
     try {
         const platform = { Pinterest: 'Pinterest', Insta: 'Instagram', TG: 'Telegram', Блог: 'Блог' }[idea.tagKey] || idea.tagKey;
         const post = await generateAIPost(idea.topic, idea.direction, platform, idea.details);
         idea.postText = post;
         saveState();
+        
         if (showInEditor) {
             currentIdeaId = ideaId;
-            document.getElementById('post-output').value = post;
-            autoResize(document.getElementById('post-output'));
+            const postOutput = document.getElementById('post-output');
+            postOutput.value = post;
+            autoResize(postOutput);
             document.getElementById('plan-date').value = idea.calendarDate || formatISODate(new Date());
             document.getElementById('plan-notes').value = idea.notes || '';
             updateLikeButton();
         }
+        
+        // ЗАВЕРШАЕМ АНИМАЦИЮ
+        aiAnimation.finish();
+        
         if (btn) {
             btn.innerHTML = '✅ Готово!';
             setTimeout(() => { if (btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }, 1500);
         }
         showNotification('✨ Пост сгенерирован!', 'success');
-    } catch (error) {
+        
+    } // В блоке catch в функции generatePostForIdea:
+    catch (error) {
         console.error(error);
+        
+        // Показываем красивое сообщение об ошибке с предложениями
+        if (aiAnimation) {
+            const suggestions = [
+                '💡 Попробуйте другую тему',
+                '💡 Воспользуйтесь готовыми шаблонами ⭐',
+                '💡 Обновите страницу',
+                '💡 Попробуйте позже'
+            ];
+            aiAnimation.showError(error.message, suggestions);
+        } else {
+            showNotification(error.message, 'error');
+        }
+        
         if (btn) {
             btn.innerHTML = '❌ Ошибка';
             setTimeout(() => { if (btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }, 3000);
         }
-        showNotification(error.message, 'error');
     }
 }
 
@@ -1328,6 +1424,60 @@ async function init() {
     // UI рендерим сразу по локальному state.
     initKeyboardHandling();
 
+
+    // Настройки генерации (сворачивание/разворачивание)
+const settingsToggle = document.getElementById('settings-toggle');
+const settingsBody = document.getElementById('settings-body');
+
+if (settingsToggle && settingsBody) {
+    settingsToggle.addEventListener('click', () => {
+        settingsBody.classList.toggle('hidden');
+        settingsToggle.classList.toggle('open');
+        
+        // Сохраняем состояние в localStorage
+        const isOpen = !settingsBody.classList.contains('hidden');
+        localStorage.setItem('settings-open', isOpen);
+    });
+    
+    // Восстанавливаем состояние из localStorage
+    const savedState = localStorage.getItem('settings-open');
+    if (savedState === 'true') {
+        settingsBody.classList.remove('hidden');
+        settingsToggle.classList.add('open');
+    }
+}
+
+// Сохраняем настройки при изменении
+const saveSettings = () => {
+    const settings = getGenerationSettings();
+    localStorage.setItem('generation-settings', JSON.stringify(settings));
+};
+
+// Слушаем изменения настроек
+['setting-emojis', 'setting-hashtags', 'setting-length', 'setting-tone'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('change', saveSettings);
+    }
+});
+
+// Загружаем сохранённые настройки
+const savedSettings = localStorage.getItem('generation-settings');
+if (savedSettings) {
+    try {
+        const settings = JSON.parse(savedSettings);
+        if (document.getElementById('setting-emojis')) 
+            document.getElementById('setting-emojis').checked = settings.emojis ?? true;
+        if (document.getElementById('setting-hashtags')) 
+            document.getElementById('setting-hashtags').checked = settings.hashtags ?? true;
+        if (document.getElementById('setting-length')) 
+            document.getElementById('setting-length').value = settings.length ?? 'medium';
+        if (document.getElementById('setting-tone')) 
+            document.getElementById('setting-tone').value = settings.tone ?? 'friendly';
+    } catch(e) {}
+}
+
+
     window.generateAutoIdeas = generateAutoIdeas;
     window.closeModal = closeModal;
 
@@ -1418,6 +1568,11 @@ async function init() {
         }
     })();
 }
+
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', init);
 window.closeModal = closeModal;

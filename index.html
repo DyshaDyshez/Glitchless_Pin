@@ -274,7 +274,60 @@
                     <label class="label">📝 Детали (опционально)</label>
                     <textarea id="idea-text" class="input auto-resize" rows="2" placeholder="Уточните: аудитория, tone of voice, ключевые преимущества..."></textarea>
                   </div>
-
+                  
+<!-- Дополнительные настройки генерации -->
+<!-- Дополнительные настройки генерации - КОМПАКТНАЯ ВЕРСИЯ -->
+<div class="generation-settings">
+  <button class="settings-toggle" id="settings-toggle">
+      <div class="settings-toggle-left">
+          <i class="fa-regular fa-sliders-h"></i>
+          <span>Дополнительные настройки</span>
+      </div>
+      <i class="fa-regular fa-chevron-down settings-chevron"></i>
+  </button>
+  
+  <div class="settings-body hidden" id="settings-body">
+      <div class="settings-compact-grid">
+          <!-- Эмодзи -->
+          <div class="setting-compact">
+              <span>😀 Эмодзи</span>
+              <label class="toggle-switch-compact">
+                  <input type="checkbox" id="setting-emojis" checked>
+                  <span class="toggle-slider-compact"></span>
+              </label>
+          </div>
+          
+          <!-- Хэштеги -->
+          <div class="setting-compact">
+              <span># Хэштеги</span>
+              <label class="toggle-switch-compact">
+                  <input type="checkbox" id="setting-hashtags" checked>
+                  <span class="toggle-slider-compact"></span>
+              </label>
+          </div>
+          
+          <!-- Длина -->
+          <div class="setting-compact">
+              <span>📏 Длина</span>
+              <select id="setting-length" class="setting-select-compact">
+                  <option value="short">Короткий</option>
+                  <option value="medium" selected>Средний</option>
+                  <option value="long">Длинный</option>
+              </select>
+          </div>
+          
+          <!-- Тон -->
+          <div class="setting-compact">
+              <span>🎭 Тон</span>
+              <select id="setting-tone" class="setting-select-compact">
+                  <option value="friendly">Дружелюбный</option>
+                  <option value="professional">Профессиональный</option>
+                  <option value="humorous">С юмором</option>
+              </select>
+          </div>
+      </div>
+  </div>
+</div>
                   <div class="flex gap-2">
                     <button id="btn-generate-idea" class="btn btn--primary flex-1">
                       🚀 Сгенерировать пост
