@@ -3821,6 +3821,7 @@ body, .main, .page {
 /* Уменьшаем отступы в левой панели */
 .panel-header {
   padding: 12px 16px;
+  border-radius: 1rem;
 }
 
 /* Theme menu (fixed - over everything) */

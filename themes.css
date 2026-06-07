@@ -315,8 +315,33 @@ body {
 }
 
 [data-theme="dark"] .post-output {
-    background: var(--bg-input);
-    color: var(--text-primary);
-    border-color: var(--border-color);
+    /* Было: var(--bg-input) и var(--text-primary) — слишком контрастно/или в некоторых случаях "уходило" в фон */
+    background: rgba(2, 6, 23, 0.40);
+    color: #e5e7eb;
+    border-color: rgba(99, 102, 241, 0.45);
 }
+
+/* Текст в редакторе/полях ввода (чтобы не "сливался") */
+[data-theme="dark"] .post-output,
+[data-theme="dark"] .input,
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .filter-select,
+[data-theme="dark"] .filter-input,
+[data-theme="dark"] textarea.input {
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .idea-card,
+[data-theme="dark"] .template-card,
+[data-theme="dark"] .stat-card {
+    background: rgba(15, 23, 42, 0.55);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+[data-theme="dark"] .calendar-day,
+[data-theme="dark"] .calendar-day.today {
+    color: #e5e7eb;
+}
+
 

@@ -155,10 +155,26 @@ html[data-theme="moon"] .post-output,
 html[data-theme="moon_theme"] .post-output,
 html[data-theme="night"] .post-output,
 html[data-theme="lunar"] .post-output{
-  background: rgba(15,23,42,.45) !important;
-  border-color: rgba(167,139,250,.24) !important;
-  color: var(--text) !important;
+  background: rgba(2, 6, 23, .42) !important;
+  border-color: rgba(167,139,250,.34) !important;
+  color: rgba(226,232,240,.98) !important;
 }
+
+html[data-theme="moon"] .post-output::placeholder,
+html[data-theme="moon_theme"] .post-output::placeholder,
+html[data-theme="night"] .post-output::placeholder,
+html[data-theme="lunar"] .post-output::placeholder{
+  color: rgba(226,232,240,.40) !important;
+}
+
+/* чтобы не "сливалось" текст/фон в режиме редактирования */
+html[data-theme="moon"] .post-output[readonly],
+html[data-theme="moon_theme"] .post-output[readonly],
+html[data-theme="night"] .post-output[readonly],
+html[data-theme="lunar"] .post-output[readonly]{
+  background: rgba(2, 6, 23, .30) !important;
+}
+
 
 /* Кнопки */
 html[data-theme="moon"] .btn--primary,
