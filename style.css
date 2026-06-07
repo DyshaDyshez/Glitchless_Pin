@@ -444,25 +444,33 @@ textarea.input {
 
 
 
-/* Scrollbar */
+/* Scrollbar (под дизайн сайта) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.25));
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.55), rgba(236, 72, 153, 0.35));
 }
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.6) rgba(255, 255, 255, 0.12);
+}
+
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -1004,7 +1012,7 @@ textarea.input {
   
   .template-preview {
     font-size: 0.75rem;
-    color: #64748b;
+    color: #a9bbd3;
     margin-bottom: 12px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -2863,7 +2871,7 @@ body, .main, .page {
 .calendar-item .item-title,
 .calendar-item .item-icon,
 .calendar-item .published-badge {
-  color: #1e293b !important; /* тёмно-серый, почти чёрный */
+  color: #1866e2 !important; /* тёмно-серый, почти чёрный */
 }
 
 /* Если элемент опубликован – делаем текст серым, но всё ещё читаемым */

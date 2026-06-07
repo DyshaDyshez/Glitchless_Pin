@@ -105,6 +105,7 @@ body {
     background: var(--gradient-body);
     color: var(--text-primary);
     transition: all 0.3s ease;
+    color: rgb(9, 14, 14);
 }
 
 /* Sidebar */

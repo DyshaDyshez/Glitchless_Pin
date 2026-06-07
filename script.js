@@ -99,13 +99,14 @@ function initKeyboardHandling() {
     let scrollTimeout;
     
     const onFocus = (e) => {
+        // Скроллим только на телефонах/мобилках
+        if (window.innerWidth > 768) return;
+
         setTimeout(() => {
             e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 300);
-        
-        if (window.innerWidth <= 768) {
-            document.body.classList.add('keyboard-open');
-        }
+
+        document.body.classList.add('keyboard-open');
     };
     
     const onBlur = () => {
@@ -214,7 +215,7 @@ function customConfirm(message, title = 'Подтверждение') {
             setTimeout(() => {
                 modalRoot.classList.add('hidden');
                 modalContent.innerHTML = '';
-            }, 200);
+            }, 100);
         };
         yesBtn.onclick = () => { cleanup(); resolve(true); };
         noBtn.onclick = () => { cleanup(); resolve(false); };
@@ -254,7 +255,7 @@ function customPrompt(message, defaultValue = '', title = 'Введите зна
             setTimeout(() => {
                 modalRoot.classList.add('hidden');
                 modalContent.innerHTML = '';
-            }, 200);
+            }, 100);
         };
         okBtn.onclick = () => { const value = input?.value || ''; cleanup(); resolve(value); };
         cancelBtn.onclick = () => { cleanup(); resolve(null); };
